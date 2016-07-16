@@ -3,7 +3,7 @@
 Aeotec DSB29 Door/Window Sensor (2nd Edition) 
 https://aeotec.freshdesk.com/helpdesk/attachments/6009584513
 -->
-<Product xmlns='http://code.google.com/p/open-zwave/'>
+<Product xmlns='https://github.com/OpenZWave/open-zwave' Revision="1">
 
 	<!-- Configuration Parameters -->
 	<CommandClass id="112">
@@ -40,7 +40,7 @@ https://aeotec.freshdesk.com/helpdesk/attachments/6009584513
 	<!-- Association Groups -->
 	<CommandClass id="133">		
 		<Associations num_groups="1">
-			<Group index="1" max_associations="6" label="Reports" />
+			<Group index="1" max_associations="6" label="Lifeline" />
 		</Associations>
 	</CommandClass>
 

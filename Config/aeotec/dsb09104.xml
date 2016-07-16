@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<Product xmlns='https://github.com/OpenZWave/open-zwave' Revision="1">
 <!-- 
 Aeotec DSB09104 Home Energy Meter
 https://aeotec.freshdesk.com/helpdesk/attachments/6009584509
 -->
-<Product xmlns='http://code.google.com/p/open-zwave/'>
   <!-- Configuration Parameters -->
   <CommandClass id="112">
     <Value type="short" index="1" genre="config" label="Country Voltage" units="volts" min="0" max="240" value="120">
@@ -184,7 +184,7 @@ https://aeotec.freshdesk.com/helpdesk/attachments/6009584509
   <!-- Association Groups -->
   <CommandClass id="133">
     <Associations num_groups="1">
-      <Group index="1" max_associations="5" label="Report" />
+      <Group index="1" max_associations="5" label="Lifeline" />
     </Associations>
   </CommandClass>
 </Product>

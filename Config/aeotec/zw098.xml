@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
-Aeotec ZW098 LED Bulb
-https://aeotec.freshdesk.com/helpdesk/attachments/6009584691
--->
-<Product xmlns='http://code.google.com/p/open-zwave/'>
+<!-- Aeotec LED Bulb -->
+<Product xmlns='https://github.com/OpenZWave/open-zwave' Revision="1">
 	<!-- Configuration Parameters -->
 	<CommandClass id="112">
 		<Value type="list" index="32" genre="config" label="Send out a report when the color is changed" min="0" max="1" value="0" size="1">
@@ -48,9 +45,12 @@ https://aeotec.freshdesk.com/helpdesk/attachments/6009584691
 			<Item label="Unlock" value="0"/>
 			<Item label="Lock" value="1"/>
 		</Value>
-		<Value type="int" index="255" genre="config" label="Reset default configuration" units="" value="0" write_only="true" affects="all">
-			<Help>Reset to the default configuration</Help>
-		</Value>  	
+		<Value type="list" index="255" genre="config" label="Reset To Factory Defaults" size="4" value="1" write_only="true">
+      		<Help>Reset to factory defaults</Help>
+      		<Item label="Reset to factory default setting" value="0"/>
+      		<Item label="Normal" value="1"/>
+      		<Item label="Reset to factory default setting and removed from the z-wave network" value="1431655765"/>
+    	</Value>
     </CommandClass>    
     <!-- Association Groups -->
 	<CommandClass id="133">
