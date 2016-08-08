@@ -99,6 +99,7 @@
 #include "../hardware/BleBox.h"
 #include "../hardware/Ec3kMeterTCP.h"
 #include "../hardware/OpenWeatherMap.h"
+#include "../hardware/GoodweAPI.h"
 
 // load notifications configuration
 #include "../notifications/NotificationHelper.h"
@@ -877,13 +878,17 @@ bool MainWorker::AddHardwareFromParams(
 		pHardware = new COpenWebNet(ID, Address, Port);
 		break;
 	case HTYPE_BleBox:
-		pHardware = new BleBox(ID, Mode1, Mode2);
+		pHardware = new BleBox(ID, Mode1);
 		break;
 	case HTYPE_OpenWeatherMap:
 		pHardware = new COpenWeatherMap(ID, Username, Password);
 		break;
 	case HTYPE_Ec3kMeterTCP:
 		pHardware = new Ec3kMeterTCP(ID, Address, Port);
+		break;
+	case HTYPE_GoodweAPI:
+		pHardware = new GoodweAPI(ID, Username);
+		break;
 	}
 
 	if (pHardware)
