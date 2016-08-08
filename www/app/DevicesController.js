@@ -182,8 +182,8 @@ define(['app'], function (app) {
 				processing: true,
 				stateSave: true,
 				jQueryUI: true,
-				lengthMenu: [[25, 50, 100, 250, -1], [25, 50, 100, 250, "All"]],
-				pagingType: 'full_numbers',
+				lengthMenu: [[-1, 25, 50, 100, 250], ["All", 25, 50, 100, 250]],
+				paging: 'full_numbers',
 				language: $.DataTableLanguage,
 				scrollCollapse: true,
 			} );
