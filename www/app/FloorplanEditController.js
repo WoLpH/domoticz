@@ -494,7 +494,7 @@ define(['app'], function (app) {
 				"bStateSave": true,
 				"bJQueryUI": true,
 				"aLengthMenu": [[5, 10, 25, 100, -1], [5, 10, 25, 100, "All"]],
-				"iDisplayLength" : 5,
+				"iDisplayLength" : -1, "paging": false,
 				"sPaginationType": "full_numbers",
 				language: $.DataTableLanguage
 				} );
@@ -509,7 +509,7 @@ define(['app'], function (app) {
 				"bStateSave": false,
 				"bJQueryUI": true,
 				"aLengthMenu": [[5, 10, 25, 100, -1], [5, 10, 25, 100, "All"]],
-				"iDisplayLength" : 10,
+				"iDisplayLength" : -1, "paging": false,
 			});
 
 			oTable = $('#imagetable').dataTable( {

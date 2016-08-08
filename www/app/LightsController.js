@@ -733,7 +733,7 @@ define(['app'], function (app) {
 			  "bStateSave": true,
 			  "bJQueryUI": true,
 			  "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-			  "iDisplayLength" : 25,
+			  "iDisplayLength" : -1, "paging": false,
 			  "sPaginationType": "full_numbers",
 			  language: $.DataTableLanguage
 			} );
@@ -1307,7 +1307,7 @@ define(['app'], function (app) {
 				levelNamesMaxLength = 11,
 				initializeTable = $('#selectorlevelstable_wrapper').length === 0,
 				oTable = (initializeTable) ? table$.dataTable({
-					"iDisplayLength": 25,
+					"iDisplayLength" : -1, "paging": false,
 					"bLengthChange": false,
 					"bFilter": false,
 					"bInfo": false,
@@ -1421,7 +1421,7 @@ define(['app'], function (app) {
 				levelActionsMaxLength = 11,
 				initializeTable = $('#selectoractionstable_wrapper').length === 0,
 				oTable = (initializeTable) ? table$.dataTable({
-					"iDisplayLength": 25,
+					"iDisplayLength" : -1, "paging": false,
 					"bLengthChange": false,
 					"bFilter": false,
 					"bInfo": false,

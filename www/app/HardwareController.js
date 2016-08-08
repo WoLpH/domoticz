@@ -1652,7 +1652,7 @@ define(['app'], function (app) {
               "bStateSave": true,
               "bJQueryUI": true,
               "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-              "iDisplayLength" : 25,
+              "iDisplayLength" : -1, "paging": false,
               "sPaginationType": "full_numbers",
               language: $.DataTableLanguage
             } );
@@ -1892,7 +1892,7 @@ define(['app'], function (app) {
               "bStateSave": true,
               "bJQueryUI": true,
               "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-              "iDisplayLength" : 25,
+              "iDisplayLength" : -1, "paging": false,
               "sPaginationType": "full_numbers",
               language: $.DataTableLanguage
             } );
@@ -2152,7 +2152,7 @@ define(['app'], function (app) {
               "bStateSave": true,
               "bJQueryUI": true,
               "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-              "iDisplayLength" : 25,
+              "iDisplayLength" : -1, "paging": false,
               "sPaginationType": "full_numbers",
               language: $.DataTableLanguage
             } );
@@ -2167,7 +2167,7 @@ define(['app'], function (app) {
 				"bStateSave": true,
 				"bJQueryUI": true,
 				"aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-				"iDisplayLength" : 25,
+				"iDisplayLength" : -1, "paging": false,
 				"sPaginationType": "full_numbers",
 				language: $.DataTableLanguage
 			});
@@ -2399,7 +2399,7 @@ define(['app'], function (app) {
                 "bStateSave": true,
                 "bJQueryUI": true,
                 "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-                "iDisplayLength": 25,
+                "iDisplayLength" : -1, "paging": false,
                 "sPaginationType": "full_numbers",
                 language: $.DataTableLanguage
             });
@@ -2634,7 +2634,7 @@ define(['app'], function (app) {
                 "bStateSave": true,
                 "bJQueryUI": true,
                 "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-                "iDisplayLength": 25,
+                "iDisplayLength" : -1, "paging": false,
                 "sPaginationType": "full_numbers",
                 language: $.DataTableLanguage
             });
@@ -2855,7 +2855,7 @@ define(['app'], function (app) {
                 "bStateSave": true,
                 "bJQueryUI": true,
                 "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-                "iDisplayLength": 25,
+                "iDisplayLength" : -1, "paging": false,
                 "sPaginationType": "full_numbers",
                 language: $.DataTableLanguage
             });
@@ -2947,7 +2947,7 @@ define(['app'], function (app) {
                 "bStateSave": true,
                 "bJQueryUI": true,
                 "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-                "iDisplayLength": 25,
+                "iDisplayLength" : -1, "paging": false,
                 "sPaginationType": "full_numbers",
                 language: $.DataTableLanguage
             });
@@ -3758,7 +3758,7 @@ define(['app'], function (app) {
               "bStateSave": true,
               "bJQueryUI": true,
               "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-              "iDisplayLength" : 25,
+              "iDisplayLength" : -1, "paging": false,
               "sPaginationType": "full_numbers",
               language: $.DataTableLanguage
             } );
@@ -3790,7 +3790,7 @@ define(['app'], function (app) {
               "bStateSave": true,
               "bJQueryUI": true,
               "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-              "iDisplayLength" : 25,
+              "iDisplayLength" : -1, "paging": false,
               "sPaginationType": "full_numbers",
               language: $.DataTableLanguage
             } );
@@ -4814,7 +4814,7 @@ define(['app'], function (app) {
               "bStateSave": true,
               "bJQueryUI": true,
               "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-              "iDisplayLength" : 25,
+              "iDisplayLength" : -1, "paging": false,
               "sPaginationType": "full_numbers",
               language: $.DataTableLanguage
             } );
