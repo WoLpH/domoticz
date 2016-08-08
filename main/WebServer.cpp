@@ -117,11 +117,8 @@ namespace http {
 
 		CWebServer::~CWebServer(void)
 		{
-			if (m_pWebEm != NULL)
-			{
-				delete m_pWebEm;
-				m_pWebEm = NULL;
-			}
+			// RK, we call StopServer() instead of just deleting m_pWebEm. The Do_Work thread might still be accessing that object
+			StopServer();
 		}
 
 		void CWebServer::Do_Work()
@@ -601,7 +598,7 @@ namespace http {
 
 			//Start normal worker thread
 			m_bDoStop = false;
-			m_thread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&CWebServer::Do_Work, this)));
+			m_thread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&CWebServer::Do_Work, shared_from_this())));
 
 			return (m_thread != NULL);
 		}
@@ -614,6 +611,12 @@ namespace http {
 				if (m_pWebEm == NULL)
 					return;
 				m_pWebEm->Stop();
+				if (m_thread != NULL) {
+					m_thread->join();
+					m_thread.reset();
+				}
+				delete m_pWebEm;
+				m_pWebEm = NULL;
 			}
 			catch (...)
 			{
@@ -1157,6 +1160,10 @@ namespace http {
 			else if (htype == HTYPE_OpenWebNet) {
 				//All fine here
 			}
+			else if (htype == HTYPE_GoodweAPI) {
+				if (username == "")
+					return;
+			}
 			else
 				return;
 
@@ -1401,9 +1408,14 @@ namespace http {
 			else if (htype == HTYPE_OpenWebNet) {
 				//All fine here
 			}
+			else if (htype == HTYPE_GoodweAPI) {
+					if (username == "") {
+						return;
+					}
+			}
 			else
 				return;
-
+			
 			int mode1 = atoi(request::findValue(&req, "Mode1").c_str());
 			int mode2 = atoi(request::findValue(&req, "Mode2").c_str());
 			int mode3 = atoi(request::findValue(&req, "Mode3").c_str());
@@ -8948,7 +8960,7 @@ namespace http {
 							}
 							root["result"][ii]["TypeImg"] = "current";
 							root["result"][ii]["SwitchTypeVal"] = switchtype; //MTYPE_ENERGY
-
+							root["result"][ii]["Options"] = sOptions;  //for alternate Energy Reading
 						}
 					}
 					else if (dType == pTypeAirQuality)
@@ -13953,6 +13965,17 @@ namespace http {
 									strcpy(szTmp, "0");
 								}
 								root["result"][ii]["c1"] = szTmp;
+
+								if (counter_2 != 0)
+								{
+									sprintf(szTmp, "%.3f", (counter_2 - fDeliv_1) / EnergyDivider);
+								}
+								else
+								{
+									strcpy(szTmp, "0");
+								}
+								root["result"][ii]["c2"] = szTmp;
+
 								if (counter_3 != 0)
 								{
 									sprintf(szTmp, "%.3f", (counter_3 - fUsage_2) / EnergyDivider);
@@ -13962,6 +13985,17 @@ namespace http {
 									strcpy(szTmp, "0");
 								}
 								root["result"][ii]["c3"] = szTmp;
+
+								if (counter_4 != 0)
+								{
+									sprintf(szTmp, "%.3f", (counter_4 - fDeliv_2) / EnergyDivider);
+								}
+								else
+								{
+									strcpy(szTmp, "0");
+								}
+								root["result"][ii]["c4"] = szTmp;
+
 								ii++;
 							}
 							if (bHaveDeliverd)

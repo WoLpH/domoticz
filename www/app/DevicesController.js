@@ -156,15 +156,13 @@ define(['app'], function (app) {
 		  $('#devicescontent').html(htmlcontent);
 		  $('#devicescontent').i18n();
 
-			$('#devicescontent #devices').dataTable( {
-				"sDom": '<"H"lfrC>t<"F"ip>',
-				"oTableTools": {
-					"sRowSelect": "single"
-				},
-				"aoColumnDefs": [
+			var mTable = $('#devicescontent #devices');
+			var oTable = mTable.DataTable({
+				dom: '<"H"lfrC>t<"F"ip>',
+				columnDefs: [
 					{ "bSortable": false, "aTargets": [ 0,11 ] }
 				],
-				"aoColumns": [
+				columns: [
 					null,
 					null,
 					null,
@@ -175,24 +173,22 @@ define(['app'], function (app) {
 					null,
 					null,
 					null,
-					{ "sType": "numeric-battery" },
+					{sType: "numeric-battery"},
 					null,
 					null
 				],
-				"aaSorting": [[ 12, "desc" ]],
-				"bSortClasses": false,
-				"bProcessing": true,
-				"bStateSave": true,
-				"bJQueryUI": true,
-				"aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]],
-				"iDisplayLength" : 25,
-				"sPaginationType": "full_numbers",
-				language: $.DataTableLanguage
+				order: [[12, 'desc']],
+				orderClasses: false,
+				processing: true,
+				stateSave: true,
+				jQueryUI: true,
+				lengthMenu: [[25, 50, 100, 250, -1], [25, 50, 100, 250, "All"]],
+				pagingType: 'full_numbers',
+				language: $.DataTableLanguage,
+				scrollCollapse: true,
 			} );
 
-		  var mTable = $('#devicescontent #devices');
-		  var oTable = mTable.dataTable();
-		  oTable.fnClearTable();
+			oTable.rows().remove();
 		  
 		  $.ajax({
 			 url: "json.htm?type=devices&displayhidden=1&filter=all&used=" + ifilter, 
@@ -399,7 +395,7 @@ define(['app'], function (app) {
 				  else if (BatteryLevel=="0") {
 								BatteryLevel=$.t("Low");
 				  }
-				  var addId = oTable.fnAddData([
+				  var addId = oTable.row.add([
 							  itemChecker + "&nbsp;&nbsp;" + itemImage,
 							  item.idx,
 							  item.HardwareName,
@@ -413,9 +409,43 @@ define(['app'], function (app) {
 							  BatteryLevel,
 							  itemSubIcons,
 							  item.LastUpdate
-							], false);
+				  ]);
 				});
-				mTable.fnDraw();
+						oTable.draw(false);
+
+						oTable.columns().every(function (i, column) {
+							var column = this;
+							var title = $(column.footer()).text();
+							var filter_type = column.footer().dataset.filter;
+							if(filter_type === 'select') {
+								/* Create a select box with all possible values */
+								var select = $('<select><option value="">Search ' + title + '</option></select>')
+									.appendTo($(column.footer()).empty())
+									.on('change', function () {
+										var val = $.fn.dataTable.util.escapeRegex(
+											$(this).val()
+										);
+
+										column
+											.search(val ? '^' + val + '$' : '', true, false)
+											.draw();
+									});
+
+								column.data().unique().sort().each(function (d, j) {
+									select.append('<option value="' + d + '">' + d + '</option>')
+								});
+							}else if(/^(text|number|date|time|datetime|search|color)$/.test(filter_type)){
+								/* Create text inputs for manual searching */
+								var input = $('<input type="' + filter_type + '" placeholder="Search ' + title + '" />')
+									.appendTo($(column.footer()).empty())
+									.on('keyup change', function (){
+										column.search($(this).val()).draw();
+				});
+							}else{
+								/* No filter type defined, probably not a filterable column. */
+							}
+						});
+
 			  }
 			 }
 		  });
