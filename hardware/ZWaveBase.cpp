@@ -641,7 +641,7 @@ void ZWaveBase::SendDevice2Domoticz(const _tZWaveDevice *pDevice)
 				return;
 			tsen.WIND.tempsign = (pTempDevice->floatValue >= 0) ? 0 : 1;
 			tsen.WIND.chillsign = (pTempDevice->floatValue >= 0) ? 0 : 1;
-			int at10 = round(abs(pTempDevice->floatValue*10.0f));
+			int at10 = round(std::abs(pTempDevice->floatValue*10.0f));
 			tsen.WIND.temperatureh = (BYTE)(at10 / 256);
 			tsen.WIND.chillh = (BYTE)(at10 / 256);
 			at10 -= (tsen.WIND.chillh * 256);
@@ -706,7 +706,7 @@ void ZWaveBase::SendDevice2Domoticz(const _tZWaveDevice *pDevice)
 	else if (pDevice->devType == ZDTYPE_SENSOR_MOISTURE)
 	{
 		uint16_t NodeID = (ID3 << 8) | ID4;
-		SendMoistureSensor(NodeID, BatLevel, round(pDevice->floatValue), "Moisture");
+		SendPercentageSensor((int)(ID1 << 24) | (ID2 << 16) | (ID3 << 8) | ID4, 0, BatLevel, pDevice->floatValue, "Moisture");
 	}
 	else if (pDevice->devType == ZDTYPE_SENSOR_TANK_CAPACITY)
 	{
