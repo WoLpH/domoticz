@@ -396,19 +396,19 @@ define(['app'], function (app) {
 								BatteryLevel=$.t("Low");
 				  }
 				  var addId = oTable.row.add([
-							  itemChecker + "&nbsp;&nbsp;" + itemImage,
-							  item.idx,
-							  item.HardwareName,
-							  ID,
-							  item.Unit,
-							  item.Name,
-							  item.Type,
-							  item.SubType,
-							  item.Data,
-							  item.SignalLevel,
-							  BatteryLevel,
-							  itemSubIcons,
-							  item.LastUpdate
+					itemChecker + "&nbsp;&nbsp;" + itemImage,
+					item.idx,
+					item.HardwareName,
+					ID,
+					item.Unit,
+					item.Name,
+					item.Type,
+					item.SubType,
+					item.Data,
+					item.SignalLevel,
+					BatteryLevel,
+					itemSubIcons,
+					item.LastUpdate
 				  ]);
 				});
 						oTable.draw(false);
