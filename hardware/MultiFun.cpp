@@ -85,7 +85,7 @@ static sensorType sensors[sensorsCount] =
 	{ "Calculated Boiler", 10.0 },
 	{ "Calculated H.W.U.", 10.0 },
 	{ "Calculated C.H.1", 10.0 },
-	{ "Calculated C.H.1", 10.0 }
+	{ "Calculated C.H.2", 10.0 }
 };
 
 static dictionary quickAccessType = boost::assign::map_list_of
@@ -119,6 +119,8 @@ MultiFun::MultiFun(const int ID, const std::string &IPAddress, const unsigned sh
 
 	m_isSensorExists[0] = false;
 	m_isSensorExists[1] = false;
+	m_isWeatherWork[0] = false;
+	m_isWeatherWork[1] = false;
 }
 
 MultiFun::~MultiFun()
@@ -238,12 +240,13 @@ bool MultiFun::WriteToHardware(const char *pdata, const unsigned char length)
 	{
 		const _tThermostat *therm = reinterpret_cast<const _tThermostat*>(pdata);
 
-		int temp = therm->temp;
+		float temp = therm->temp;
 
-		if (therm->id2 == 0x1F || therm->id2 == 0x20)
+		if ((therm->id2 == 0x1F || therm->id2 == 0x20) ||
+			((therm->id2 == 0x1C || therm->id2 == 0x1D) && m_isWeatherWork[therm->id2 - 0x1C]))
 		{
 			temp = temp * 5;
-			temp = temp | 0x8000;
+			temp = (int)temp | 0x8000;
 		}
 
 		unsigned char buffer[100];
@@ -408,6 +411,10 @@ void MultiFun::GetRegisters(bool firstTime)
 								SendTextSensor(1, 0, 255, "End - " + (*it).second, "Alarms");
 							}
 					}
+					if (((bool)m_LastAlarms != bool(value)) || firstTime)
+					{
+						SendAlertSensor(0, 255, value ? 4 : 1, "Alarm");
+					}
 					m_LastAlarms = value;
 					break;
 				}
@@ -425,6 +432,10 @@ void MultiFun::GetRegisters(bool firstTime)
 							{
 								SendTextSensor(1, 1, 255, "End - " + (*it).second, "Warnings");
 							}
+					}
+					if (((bool)m_LastWarnings != bool(value)) || firstTime)
+					{
+						SendAlertSensor(1, 255, value ? 3 : 1, "Warning");
 					}
 					m_LastWarnings = value;
 					break;
@@ -483,6 +494,7 @@ void MultiFun::GetRegisters(bool firstTime)
 					{
 						temp = (value & 0x0FFF) * 0.2;
 					}
+					m_isWeatherWork[i - 0x1C] = (value & 0x8000) == 0x8000;
 					SendSetPointSensor(i, 1, 1, temp, name);
 					break;
 				}
@@ -617,7 +629,7 @@ int MultiFun::SendCommand(const unsigned char* cmd, const unsigned int cmdLength
 				{
 					if (databuffer[8] >= 1 && databuffer[8] <= 4)
 					{
-						_log.Log(LOG_ERROR, "MultiFun: Receive error (%s)", errors[databuffer[8]].c_str());
+						_log.Log(LOG_ERROR, "MultiFun: Receive error (%s)", errors[databuffer[8] - 1].c_str());
 					}
 					else
 					{
