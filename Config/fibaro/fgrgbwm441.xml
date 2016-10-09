@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<Product xmlns='https://github.com/OpenZWave/open-zwave' Revision="2">
+<Product xmlns='http://code.google.com/p/open-zwave/'>
 
   <!-- Basic Messages should map to the ColorControl Command Class I hope -->
   <CommandClass id="32" setasreport="true"/>
