@@ -447,6 +447,15 @@
     <Filter Include="Devices\ZiBlue RFPlayer">
       <UniqueIdentifier>{6d5aee6b-8dca-4b16-94fe-b4c8b48ccda2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Devices\YeeLight">
+      <UniqueIdentifier>{40997df4-ca83-46d7-ae42-d23049f98a0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Devices\Python Plugins">
+      <UniqueIdentifier>{71bf66bf-20b6-4786-b8ff-f394e16d2d84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Devices\Xiaomi Gateway">
+      <UniqueIdentifier>{5f68f493-7523-43aa-95db-f23ecc307771}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\CMakeLists.txt">
@@ -1927,6 +1936,24 @@
     <ClInclude Include="..\hardware\ziblue_usb_frame_api.h">
       <Filter>Devices\ZiBlue RFPlayer</Filter>
     </ClInclude>
+    <ClInclude Include="..\hardware\Yeelight.h">
+      <Filter>Devices\YeeLight</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hardware\MySensorsMQTT.h">
+      <Filter>Devices\MySensors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hardware\plugins\PluginManager.h">
+      <Filter>Devices\Python Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hardware\plugins\DelayedLink.h">
+      <Filter>Devices\Python Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hardware\plugins\Plugins.h">
+      <Filter>Devices\Python Plugins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\hardware\XiaomiGateway.h">
+      <Filter>Devices\Xiaomi Gateway</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\webserver\Base64.cpp">
@@ -2534,6 +2561,18 @@
     </ClCompile>
     <ClCompile Include="..\hardware\ZiBlueTCP.cpp">
       <Filter>Devices\ZiBlue RFPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\hardware\Yeelight.cpp">
+      <Filter>Devices\YeeLight</Filter>
+    </ClCompile>
+    <ClCompile Include="..\hardware\MySensorsMQTT.cpp">
+      <Filter>Devices\MySensors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\hardware\plugins\PluginManager.cpp">
+      <Filter>Devices\Python Plugins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\hardware\XiaomiGateway.cpp">
+      <Filter>Devices\Xiaomi Gateway</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
