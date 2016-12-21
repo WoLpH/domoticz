@@ -927,7 +927,8 @@ namespace http {
 					(ii == HTYPE_RaspberryBMP085) ||
 					(ii == HTYPE_RaspberryHTU21D) ||
 					(ii == HTYPE_RaspberryTSL2561) ||
-					(ii == HTYPE_RaspberryPCF8574)
+					(ii == HTYPE_RaspberryPCF8574) ||
+					(ii == HTYPE_RaspberryBME280)
 					)
 				{
 					bDoAdd = false;
@@ -1101,6 +1102,9 @@ namespace http {
 				//all fine here!
 			}
 			else if (htype == HTYPE_RaspberryTSL2561) {
+				//all fine here!
+			}
+			else if (htype == HTYPE_RaspberryBME280) {
 				//all fine here!
 			}
 			else if (htype == HTYPE_Dummy) {
@@ -1418,6 +1422,9 @@ namespace http {
 				//All fine here
 			}
 			else if (htype == HTYPE_RaspberryTSL2561) {
+				//All fine here
+			}
+			else if (htype == HTYPE_RaspberryBME280) {
 				//All fine here
 			}
 			else if (htype == HTYPE_Dummy) {
@@ -3453,6 +3460,7 @@ namespace http {
 						case pTypeChime:
 						case pTypeThermostat2:
 						case pTypeThermostat3:
+						case pTypeThermostat4:
 						case pTypeRemote:
 						case pTypeRadiator1:
 						case pTypeGeneralSwitch:
@@ -3551,6 +3559,7 @@ namespace http {
 							case pTypeChime:
 							case pTypeThermostat2:
 							case pTypeThermostat3:
+							case pTypeThermostat4:
 							case pTypeRemote:
 							case pTypeGeneralSwitch:
 							case pTypeHomeConfort:
@@ -4139,6 +4148,18 @@ namespace http {
 							)
 							return;
 					}
+					else if (lighttype == 307)
+					{
+					    dtype = pTypeGeneralSwitch;
+						subtype = sSwitchAuxiliaryT1;
+						devid = request::findValue(&req, "id");
+						sunitcode = request::findValue(&req, "unitcode");
+						if (
+							(devid == "") ||
+							(sunitcode == "")
+							)
+							return;
+					}
 				}
        // ----------- If needed convert to GeneralSwitch type (for o.a. RFlink) -----------
 				CDomoticzHardwareBase *pBaseHardware = reinterpret_cast<CDomoticzHardwareBase*>(m_mainworker.GetHardware(atoi(hwdid.c_str())));
@@ -4474,16 +4495,6 @@ namespace http {
 							)
 							return;
 						int iUnitCode = atoi(sunitcode.c_str());
-						if (
-							(lighttype == 205) ||
-							(lighttype == 210) ||
-							(lighttype == 211)||
-							(lighttype == 212)
-							)
-						{
-							id = id.substr(0, 6);
-							sunitcode = "0";
-						}
 						sprintf(szTmp, "%d", iUnitCode);
 						sunitcode = szTmp;
 						devid = id;
@@ -4618,6 +4629,19 @@ namespace http {
 							)
 							return;
 					}
+					else if (lighttype == 307)
+					{
+					    //Auxiliary Openwebnet
+					    dtype = pTypeGeneralSwitch;
+						subtype = sSwitchAuxiliaryT1;
+						devid = request::findValue(&req, "id");
+						sunitcode = request::findValue(&req, "unitcode");
+						if (
+							(devid == "") ||
+							(sunitcode == "")
+							)
+							return;
+					}
 				}
 
 				//check if switch is unique
@@ -4732,6 +4756,7 @@ namespace http {
 					(dType == pTypeChime) ||
 					(dType == pTypeThermostat2) ||
 					(dType == pTypeThermostat3) ||
+					(dType == pTypeThermostat4) ||
 					(dType == pTypeRemote) ||
 					(dType == pTypeGeneralSwitch) ||
 					(dType == pTypeHomeConfort) ||
@@ -5682,6 +5707,7 @@ namespace http {
 					(dType != pTypeChime) &&
 					(dType != pTypeThermostat2) &&
 					(dType != pTypeThermostat3) &&
+					(dType != pTypeThermostat4) &&
 					(dType != pTypeRemote) &&
 					(dType != pTypeGeneralSwitch) &&
 					(dType != pTypeHomeConfort) &&
@@ -7021,6 +7047,10 @@ namespace http {
 				m_mainworker.m_eventsystem.StartEventSystem();
 			}
 
+			std::string LogEventScriptTrigger = request::findValue(&req, "LogEventScriptTrigger");
+			m_sql.m_bLogEventScriptTrigger = (LogEventScriptTrigger == "on" ? 1 : 0);
+			m_sql.UpdatePreferencesVar("LogEventScriptTrigger", m_sql.m_bLogEventScriptTrigger);
+
 			std::string EnableWidgetOrdering = request::findValue(&req, "AllowWidgetOrdering");
 			int iEnableAllowWidgetOrdering = (EnableWidgetOrdering == "on" ? 1 : 0);
 			m_sql.UpdatePreferencesVar("AllowWidgetOrdering", iEnableAllowWidgetOrdering);
@@ -7700,6 +7730,7 @@ namespace http {
 								(dType != pTypeChime) &&
 								(dType != pTypeThermostat2) &&
 								(dType != pTypeThermostat3) &&
+								(dType != pTypeThermostat4) &&
 								(dType != pTypeRemote) &&
 								(dType != pTypeGeneralSwitch) &&
 								(dType != pTypeHomeConfort) &&
@@ -7965,6 +7996,7 @@ namespace http {
 						(dType == pTypeChime) ||
 						(dType == pTypeThermostat2) ||
 						(dType == pTypeThermostat3) ||
+						(dType == pTypeThermostat4) ||
 						(dType == pTypeRemote)||
 						(dType == pTypeGeneralSwitch) ||
 						(dType == pTypeHomeConfort) ||
@@ -11661,6 +11693,10 @@ namespace http {
 				{
 					root["DisableEventScriptSystem"] = nValue;
 				}
+				else if (Key == "LogEventScriptTrigger")
+				{
+					root["LogEventScriptTrigger"] = nValue;
+				}
 				else if (Key == "(1WireSensorPollPeriod")
 				{
 					root["1WireSensorPollPeriod"] = nValue;
@@ -11788,6 +11824,7 @@ namespace http {
 				(dType != pTypeChime) &&
 				(dType != pTypeThermostat2) &&
 				(dType != pTypeThermostat3) &&
+				(dType != pTypeThermostat4) &&
 				(dType != pTypeRemote)&&
 				(dType != pTypeGeneralSwitch) &&
 				(dType != pTypeHomeConfort) &&

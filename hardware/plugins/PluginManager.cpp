@@ -36,13 +36,7 @@
 #include <frameobject.h>
 #include "DelayedLink.h"
 
-#define MINIMUM_PYTHON_VERSION "3.4.0"
-
-#ifdef WIN32
-#include "../../../domoticz/main/dirent_windows.h"
-#else
-#include <dirent.h>
-#endif
+#define MINIMUM_PYTHON_VERSION "3.2.0"
 
 #define ATTRIBUTE_VALUE(pElement, Name, Value) \
 		{	\
@@ -889,6 +883,17 @@ namespace Plugins {
 		}
 	}
 
+	void CPluginProtocol::Flush(const int HwdID)
+	{
+		// Forced buffer clear, make sure the plugin gets a look at the data in case it wants it
+		CPluginMessage	Message(PMT_Message, HwdID, m_sRetainedData);
+		{
+			boost::lock_guard<boost::mutex> l(PluginMutex);
+			PluginMessageQueue.push(Message);
+		}
+		m_sRetainedData.clear();
+	}
+
 	void CPluginProtocolLine::ProcessMessage(const int HwdID, std::string & ReadData)
 	{
 		//
@@ -958,37 +963,57 @@ namespace Plugins {
 		//	Handles the cases where a read contains a partial message or multiple messages
 		//
 		std::string	sData = m_sRetainedData + ReadData;  // if there was some data left over from last time add it back in
-
-		while (true)
+		try
 		{
-			//
-			//	Find the top level tag name if it is not set
-			//
-			if (!m_Tag.length())
+			while (true)
 			{
-				int iStart = sData.find_first_of('<');
-				int iEnd = sData.find_first_of(" >");
-				if ((iStart != std::string::npos) && (iEnd != std::string::npos))
+				//
+				//	Find the top level tag name if it is not set
+				//
+				if (!m_Tag.length())
 				{
-					m_Tag = sData.substr(++iStart, (iEnd - iStart));
-					sData = sData.substr(--iStart);					// remove any leading data
+					int iStart = sData.find_first_of('<');
+					if (iStart == std::string::npos)
+					{
+						// start of a tag not found so discard
+						m_sRetainedData.clear();
+						break;
+					}
+					sData = sData.substr(iStart);					// remove any leading data
+					int iEnd = sData.find_first_of('>');
+					if (iEnd != std::string::npos)
+					{
+						m_Tag = sData.substr(1, (iEnd - 1));
+					}
 				}
-			}
 
-			int	iEnd = sData.find("/" + m_Tag);
-			if (iEnd != std::string::npos)
-			{
-				CPluginMessage	Message(PMT_Message, HwdID, sData.substr(0, iEnd + m_Tag.length()+2));
+				int	iPos = sData.find("</" + m_Tag + ">");
+				if (iPos != std::string::npos)
 				{
-					boost::lock_guard<boost::mutex> l(PluginMutex);
-					PluginMessageQueue.push(Message);
-				}
+					int iEnd = iPos + m_Tag.length() + 3;
+					CPluginMessage	Message(PMT_Message, HwdID, sData.substr(0, iEnd));
+					{
+						boost::lock_guard<boost::mutex> l(PluginMutex);
+						PluginMessageQueue.push(Message);
+					}
 
-				sData = sData.substr(iEnd + m_Tag.length() + 2);
-				m_Tag = "";
+					if (iEnd == sData.length())
+					{
+						sData.clear();
+					}
+					else
+					{
+						sData = sData.substr(++iEnd);
+					}
+					m_Tag = "";
+				}
+				else
+					break;
 			}
-			else
-				break;
+		}
+		catch (std::exception const &exc)
+		{
+			_log.Log(LOG_ERROR, "(CPluginProtocolXML::ProcessMessage) Unexpected exception thrown '%s', Data '%s'.", exc.what(), sData.c_str());
 		}
 
 		m_sRetainedData = sData; // retain any residual for next time
@@ -1183,7 +1208,12 @@ namespace Plugins {
 			if (!isOpen())
 			{
 				m_bConnected = false;
-				openOnlyBaud(m_Port, m_Baud);
+				open(m_Port, m_Baud,
+						boost::asio::serial_port_base::parity(boost::asio::serial_port_base::parity::none),
+						boost::asio::serial_port_base::character_size(8),
+						boost::asio::serial_port_base::flow_control(boost::asio::serial_port_base::flow_control::none),
+						boost::asio::serial_port_base::stop_bits(boost::asio::serial_port_base::stop_bits::one));
+
 				m_bConnected = isOpen();
 
 				CPluginMessage	Message(PMT_Connected, m_HwdID);
@@ -1576,7 +1606,7 @@ namespace Plugins {
 				}
 				else if (Message.m_Message == "Serial")
 				{
-					if (m_bDebug) _log.Log(LOG_NORM, "(%s) Transport set to: '%s', %s, %d.", Name.c_str(), Message.m_Message.c_str(), Message.m_Port.c_str(), Message.m_iValue);
+					if (m_bDebug) _log.Log(LOG_NORM, "(%s) Transport set to: '%s', '%s', %d.", Name.c_str(), Message.m_Message.c_str(), Message.m_Port.c_str(), Message.m_iValue);
 					m_pTransport = (CPluginTransport*) new CPluginTransportSerial(m_HwdID, Message.m_Port, Message.m_iValue);
 				}
 				else
@@ -1630,6 +1660,10 @@ namespace Plugins {
 				if ((m_pTransport) && (m_pTransport->IsConnected()))
 				{
 					m_pTransport->handleDisconnect();
+				}
+				if (m_pProtocol)
+				{
+					m_pProtocol->Flush(m_HwdID);
 				}
 				break;
 			default:
@@ -1891,7 +1925,7 @@ namespace Plugins {
 
 		if (!Py_LoadLibrary())
 		{
-			_log.Log(LOG_ERROR, "PluginSystem: Failed load '%s', Python probably not installed on system.", PYTHON_LIB);
+			_log.Log(LOG_STATUS, "PluginSystem: Failed dynamic library load, Python not found on your system.");
 			return false;
 		}
 
@@ -1912,7 +1946,7 @@ namespace Plugins {
 			sVersion = sVersion.substr(0, sVersion.find_first_of(' '));
 			if (sVersion < MINIMUM_PYTHON_VERSION)
 			{
-				_log.Log(LOG_ERROR, "PluginSystem: Invalid Python version '%s' found, '%s' or above required.", sVersion.c_str(), MINIMUM_PYTHON_VERSION);
+				_log.Log(LOG_STATUS, "PluginSystem: Invalid Python version '%s' found, '%s' or above required.", sVersion.c_str(), MINIMUM_PYTHON_VERSION);
 				return false;
 			}
 

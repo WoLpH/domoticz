@@ -135,7 +135,7 @@ define(['app'], function (app) {
 							hardwaretype = $("#hardwareparamsi2clocal #comboi2clocal").find('option:selected').val();
 				}
                 var text1 = $("#hardwareparamsi2clocal #comboi2clocal").find('option:selected').text();
-                if (text1.indexOf("I2C PIO 8bit expander PCF8574") >= 0)
+                if (text1.indexOf("I2C sensor PIO 8bit expander PCF8574") >= 0)
                 {
                 	var i2caddress=$("#hardwareparami2caddress #i2caddress").val();
                 	var port="&port=" + encodeURIComponent(i2caddress);
@@ -781,12 +781,23 @@ define(['app'], function (app) {
                     ShowNotify($.t('Please enter an Valid Port!'), 2500, true);
                     return;
                 }
-
+				
+				var password=encodeURIComponent($("#hardwarecontent #divlogin #password").val());
+                if (password != "")
+                {
+                   if ((isNaN(password)) || (password.length < 5)) /* must be a number */
+                   {
+                        ShowNotify($.t('Please enter a numeric password of at least 5 characters'), 2500, true);
+                        return;
+                   }
+                }
+				
                 $.ajax({
                      url: "json.htm?type=command&param=updatehardware&htype=" + hardwaretype +
                         "&address=" + address +
                         "&port=" + port +
                         //"&username=" + encodeURIComponent(username) +
+						"&password=" + encodeURIComponent(password) +
                         "&name=" + encodeURIComponent(name) +
                         "&enabled=" + bEnabled +
                         "&idx=" + idx +
@@ -895,7 +906,6 @@ define(['app'], function (app) {
 				}
 				return;
 			}
-
             if (text.indexOf("1-Wire") >= 0)
             {
                 var owfspath=$("#hardwarecontent #div1wire #owfspath").val();
@@ -1009,12 +1019,12 @@ define(['app'], function (app) {
                      }
                 });
             }
-	    else if (text.indexOf("I2C ") >= 0 && text.indexOf("I2C PIO 8bit expander PCF8574") < 0)
+	    else if (text.indexOf("I2C ") >= 0 && text.indexOf("I2C sensor PIO 8bit expander PCF8574") < 0)
 	    {
                 hardwaretype = $("#hardwareparamsi2clocal #comboi2clocal").find('option:selected').val();
                 var port="";
                 var text1 = $("#hardwareparamsi2clocal #comboi2clocal").find('option:selected').text();
-                if (text1.indexOf("I2C PIO 8bit expander PCF8574") >= 0)
+                if (text1.indexOf("I2C sensor PIO 8bit expander PCF8574") >= 0)
                 {
                 	var i2caddress=$("#hardwareparami2caddress #i2caddress").val();
                 	var port="&port=" + encodeURIComponent(i2caddress);
@@ -1485,10 +1495,20 @@ define(['app'], function (app) {
                     ShowNotify($.t('Please enter a username!'), 2500, true);
                     return;
                 }*/
+				var password=encodeURIComponent($("#hardwarecontent #divlogin #password").val());
+                if (password != "")
+                {
+                   if ((isNaN(password)) || (password.length < 5)) /* must be a number */
+                   {
+                        ShowNotify($.t('Please enter a numeric password of at least 5 characters'), 2500, true);
+                        return;
+                   }
+                }
 
                 $.ajax({
                      url: "json.htm?type=command&param=addhardware&htype=" + hardwaretype + "&address=" + address + "&port=" + port +
 					 //"&username=" + encodeURIComponent(username) +
+					 "&password=" + encodeURIComponent(password) +
 					 "&name=" + encodeURIComponent(name) + "&enabled=" + bEnabled + "&datatimeout=" + datatimeout,
                      async: false,
                      dataType: 'json',
@@ -4502,7 +4522,7 @@ define(['app'], function (app) {
                     {
                         SerialName="USB";
                     }
-                    else if ((item.Type == 13)||(item.Type == 71)||(item.Type == 85))
+                    else if ((item.Type == 13)||(item.Type == 71)||(item.Type == 85)||(item.Type == 96))
                     {
                         SerialName="I2C";
                     }
@@ -4784,7 +4804,7 @@ define(['app'], function (app) {
                         }
                         else if (data["Type"].indexOf("I2C ") >= 0) {
                             $("#hardwareparamsi2clocal #comboi2clocal").val(jQuery.inArray(data["Type"], $.myglobals.HardwareI2CStr));
-                            if (data["Type"].indexOf("I2C PIO 8bit expander PCF8574") >= 0) {
+                            if (data["Type"].indexOf("I2C sensor PIO 8bit expander PCF8574") >= 0) {
             					$("#hardwareparami2caddress #i2caddress").val(data["Port"].substring(4));		
             				}
                         }			
@@ -4816,7 +4836,7 @@ define(['app'], function (app) {
                                 $("#hardwarecontent #divcrcp1 #disablecrcp1").prop("checked",data["Mode2"]==0);
                             }
                         }
-                        else if ((((data["Type"].indexOf("LAN") >= 0) || data["Type"].indexOf("MySensors Gateway with MQTT") >= 0) && (data["Type"].indexOf("YouLess") >= 0)) || (data["Type"].indexOf("Domoticz") >= 0) || (data["Type"].indexOf("Denkovi") >= 0) || (data["Type"].indexOf("Satel Integra") >= 0) || (data["Type"].indexOf("Logitech Media Server") >= 0) || (data["Type"].indexOf("HEOS by DENON") >= 0)) {
+                        else if ((((data["Type"].indexOf("LAN") >= 0) || data["Type"].indexOf("MySensors Gateway with MQTT") >= 0) && (data["Type"].indexOf("YouLess") >= 0)) || (data["Type"].indexOf("Domoticz") >= 0) || (data["Type"].indexOf("Denkovi") >= 0) || (data["Type"].indexOf("Satel Integra") >= 0) || (data["Type"].indexOf("Logitech Media Server") >= 0) || (data["Type"].indexOf("HEOS by DENON") >= 0) ||(data["Type"].indexOf("MyHome OpenWebNet") >= 0)) {
                             $("#hardwarecontent #hardwareparamsremote #tcpaddress").val(data["Address"]);
                             $("#hardwarecontent #hardwareparamsremote #tcpport").val(data["Port"]);
                             $("#hardwarecontent #hardwareparamslogin #password").val(data["Password"]);
@@ -5006,7 +5026,7 @@ define(['app'], function (app) {
                 $("#hardwarecontent #divhttppoller").hide();
                 $("#hardwarecontent #divi2caddress").hide();
                 var text1 = $("#hardwarecontent #divi2clocal #hardwareparamsi2clocal #comboi2clocal option:selected").text();
-                if (text1.indexOf("I2C PIO 8bit expander PCF8574") >= 0)
+                if (text1.indexOf("I2C sensor PIO 8bit expander PCF8574") >= 0)
                 {
                 	$("#hardwarecontent #divi2caddress").show();
                 }
@@ -5180,7 +5200,7 @@ define(['app'], function (app) {
             {
                 $("#hardwarecontent #divserial").hide();
                 $("#hardwarecontent #divremote").show();
-                $("#hardwarecontent #divlogin").hide();
+                $("#hardwarecontent #divlogin").show();
                 $("#hardwarecontent #divunderground").hide();
                 $("#hardwarecontent #divhttppoller").hide();
                 $("#hardwarecontent #hardwareparamsremote #tcpport").val(20000);
@@ -5373,7 +5393,7 @@ define(['app'], function (app) {
 									if (typeof(param.options) == "undefined") {
 										if (param.field == "SerialPort") {
 											PluginParams += '<td><select id="'+param.field+'" style="width:'+param.width+'" class="combobox ui-corner-all">';
-											$.each($("#hardwareparamsserial #comboserialport"), function(i,option){
+											$.each($("#hardwareparamsserial #comboserialport > option"), function(i,option){
 												PluginParams += '<option data-i18n="'+option.innerText+'" value="'+option.innerText+'"';
 												PluginParams += '>'+option.innerText+'</option>';
 											});
