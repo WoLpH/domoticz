@@ -1,8 +1,7 @@
 define(['app'], function (app) {
 	app.controller('DPHttpController', [ '$scope', '$rootScope', '$location', '$http', '$interval', function($scope,$rootScope,$location,$http,$interval) {
 
-		MethodAuthenticationUpdate = function()
-		{
+		MethodAuthenticationUpdate = function () {
 			var targetType = $("#httpremote #comboauth option:selected").val();
 			switch(targetType) {
 			case "0":
@@ -22,8 +21,7 @@ define(['app'], function (app) {
 			}
 		}
 		
-		MethodUpdate = function()
-		{
+		MethodUpdate = function () {
 			var targetType = $("#httpremote #combomethod option:selected").val();
 			switch(targetType) {
 			case "0":
@@ -49,8 +47,7 @@ define(['app'], function (app) {
 			}
 		}
 		
-		TargetTypeUpdate = function()
-		{
+		TargetTypeUpdate = function () {
 			var targetType = $("#linkhttpparamstable #combotargettype option:selected").val();
 			switch(targetType) {
 			case "0":
@@ -102,20 +99,17 @@ define(['app'], function (app) {
 			}
 			
 		}
-		SaveConfiguration = function()
-		{
+		SaveConfiguration = function () {
 			var cleanurl = $('#httpremote #url').val();
 			var httpdata = $('#httpremote #data').val();
 			var httpheaders = $('#httpremote #headers').val();
 			var method = $('#httpremote #combomethod').val();
 			var linkactive = 0;	
-			if ($('#httpremote #httplinkenabled').is(":checked"))
-			{
+			if ($('#httpremote #httplinkenabled').is(":checked")) {
 				linkactive = 1;
 			}
 			var debugenabled = 0;
-			if ($('#httpremote #debugenabled').is(":checked"))
-			{
+			if ($('#httpremote #debugenabled').is(":checked")) {
 				debugenabled = 1;
 			}
 			
@@ -136,8 +130,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		DeleteLink = function(idx)
-		{
+		DeleteLink = function (idx) {
 			bootbox.confirm($.t("Are you sure you want to remove this link?"), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -154,8 +147,7 @@ define(['app'], function (app) {
 		}
 			
 
-		AddLink = function(type)
-		{
+		AddLink = function (type) {
 			var idx = $.linkIdx;
 			if (type == "a") {idx="0"};
 			var deviceid = $("#linkhttpparamstable #devicename option:selected").val();
@@ -168,13 +160,11 @@ define(['app'], function (app) {
 			var targetdeviceid = $('#linkhttpparamstable #targetdeviceid').val();
 			var targetproperty = $('#linkhttpparamstable #targetproperty').val();
 			var linkactive = 0;	
-			if ($('#linkhttpparamstable #linkenabled').is(":checked"))
-			{
+			if ($('#linkhttpparamstable #linkenabled').is(":checked")) {
 				linkactive = 1;
 			}
 			var includeunit = 0;
-			if ($('#linkhttpparamstable #includeunit').is(":checked"))
-			{
+			if ($('#linkhttpparamstable #includeunit').is(":checked")) {
 				includeunit = 1;
 			}
 			
@@ -206,8 +196,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		GetConfig = function() 
-		{
+		GetConfig = function () {
 			$.ajax({
 				url: "json.htm?type=command&param=gethttplinkconfig",
 				async: false, 
@@ -243,8 +232,7 @@ define(['app'], function (app) {
 		}
 			
 
-		ValueSelectorUpdate = function()
-		{
+		ValueSelectorUpdate = function () {
 			var deviceid = $("#linkhttpparamstable #devicename option:selected").val();	
 			var select = document.getElementById("combosendvalue");
 			select.options.length = 0;
@@ -265,8 +253,7 @@ define(['app'], function (app) {
 		  });
 		}
 			
-		RefreshLinkTable = function()
-		{
+		RefreshLinkTable = function () {
 		  $('#modal').show();
 
 			$('#linkhttpparamstable #linkupdate').attr("class", "btnstyle3-dis");
@@ -349,8 +336,7 @@ define(['app'], function (app) {
 		  $('#modal').hide();
 		}
 
-		GetDeviceValueOptionWording = function(idx,pos)
-		{
+		GetDeviceValueOptionWording = function (idx, pos) {
 			var wording = "";
 			$.ajax({
 			 url: "json.htm?type=command&param=getdevicevalueoptionwording&idx="+idx+"&pos="+pos,
@@ -365,8 +351,7 @@ define(['app'], function (app) {
 		   return wording;
 		}
 
-		ShowLinks = function()
-		{
+		ShowLinks = function () {
 			$('#httpmain').i18n();
 			var oTable = $('#linkhttptable').dataTable( {
 			  "sDom": '<"H"lfrC>t<"F"ip>',
@@ -440,8 +425,7 @@ define(['app'], function (app) {
 
 		init();
 
-		function init()
-		{
+		function init() {
 			$scope.MakeGlobalConfig();
 			//Get devices
 			$("#httpmain #devicename").html("");

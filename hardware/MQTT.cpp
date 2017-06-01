@@ -134,11 +134,9 @@ void MQTT::on_message(const struct mosquitto_message *message)
 	std::string szCommand = "udevice";
 	std::vector<std::vector<std::string> > result;
 	uint64_t idx = 0;
-
 	bool ret = jReader.parse(qMessage, root);
-	if (!ret)
+	if ((!ret) || (!root.isObject()))
 		goto mqttinvaliddata;
-
 	try
 	{
 		if (!root["command"].empty())
@@ -273,6 +271,52 @@ void MQTT::on_message(const struct mosquitto_message *message)
 				level = root["level"].asInt();
 		}
 		if (!m_mainworker.SwitchLight(idx, switchcmd, level, -1, false, 0) == true)
+		{
+			_log.Log(LOG_ERROR, "MQTT: Error sending switch command!");
+		}
+		return;
+	}
+	else if (szCommand == "setcolbrightnessvalue")
+	{
+		idx = (uint64_t)root["idx"].asInt64();
+		
+		if (root["switchcmd"].empty())
+			root["switchcmd"] = "On";
+		if (!root["switchcmd"].isString())
+			goto mqttinvaliddata;
+			
+		std::string switchcmd = root["switchcmd"].asString();
+		if ((switchcmd != "On") && (switchcmd != "Off") && (switchcmd != "Toggle") && (switchcmd != "Set Level"))
+			goto mqttinvaliddata;
+			
+		int level = 0;
+		if (!root["level"].empty())
+		{
+			if (root["level"].isString())
+				level = atoi(root["level"].asString().c_str());
+			else
+				level = root["level"].asInt();
+		}
+		
+		int hue = 0;
+		if (!root["hue"].empty())
+		{
+			if (root["hue"].isString())
+				hue = atoi(root["hue"].asString().c_str());
+			else
+				hue = root["hue"].asInt();
+		}
+		
+		int isWhite = 0;
+		if (!root["isWhite"].empty())
+		{
+			if (root["isWhite"].isString())
+				isWhite = atoi(root["isWhite"].asString().c_str());
+			else
+				isWhite = root["isWhite"].asInt();
+		}
+		
+		if (!m_mainworker.SwitchLight(idx, switchcmd, level, hue, isWhite!=0, 0) == true)
 		{
 			_log.Log(LOG_ERROR, "MQTT: Error sending switch command!");
 		}
@@ -546,6 +590,9 @@ void MQTT::SendDeviceInfo(const int m_HwdID, const uint64_t DeviceRowIdx, const 
 
 		if (IsLightOrSwitch(dType, dSubType) == true) {
 			root["switchType"] = Switch_Type_Desc(switchType);
+		}
+		else if ((dType = pTypeRFXMeter) || (dType = pTypeRFXSensor)) {
+			root["meterType"] = Meter_Type_Desc((_eMeterType)switchType);
 		}
 		// Add device options
 		std::map<std::string, std::string>::const_iterator ittOptions;

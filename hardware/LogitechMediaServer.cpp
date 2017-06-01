@@ -67,6 +67,7 @@ Json::Value CLogitechMediaServer::Query(std::string sIP, int iPort, std::string 
 		sURL << "http://" << sIP << ":" << iPort << "/jsonrpc.js";
 
 	sPostData << sPostdata;
+	
 	HTTPClient::SetTimeout(m_iPingTimeoutms / 1000);
 	bool bRetVal = HTTPClient::POST(sURL.str(), sPostData.str(), ExtraHeaders, sResult);
 
@@ -76,7 +77,7 @@ Json::Value CLogitechMediaServer::Query(std::string sIP, int iPort, std::string 
 	}
 	Json::Reader jReader;
 	bRetVal = jReader.parse(sResult, root);
-	if (!bRetVal)
+	if ((!bRetVal) || (!root.isObject()))
 	{
 		size_t aFind = sResult.find("401 Authorization Required");
 		if ((aFind > 0) && (aFind != std::string::npos))

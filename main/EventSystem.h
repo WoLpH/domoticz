@@ -15,7 +15,9 @@ extern "C" {
 #endif
 }
 
-class CEventSystem
+#include "LuaCommon.h"
+
+class CEventSystem : public CLuaCommon
 {
 	typedef struct lua_State lua_State;
 
@@ -93,6 +95,8 @@ public:
 
 	void exportDeviceStatesToLua(lua_State *lua_state);
 
+    bool PythonScheduleEvent(std::string ID, const std::string &Action, const std::string &eventName);
+
 private:
 	//lua_State	*m_pLUA;
 	bool m_bEnabled;
@@ -161,6 +165,7 @@ private:
 	std::map<std::string, float> m_winddirValuesByName;
 	std::map<std::string, float> m_windspeedValuesByName;
 	std::map<std::string, float> m_windgustValuesByName;
+	std::map<std::string, int>	 m_zwaveAlarmValuesByName;
 
 	std::map<uint64_t, float> m_tempValuesByID;
 	std::map<uint64_t, float> m_dewValuesByID;
@@ -174,6 +179,7 @@ private:
 	std::map<uint64_t, float> m_winddirValuesByID;
 	std::map<uint64_t, float> m_windspeedValuesByID;
 	std::map<uint64_t, float> m_windgustValuesByID;
+	std::map<uint64_t, int> m_zwaveAlarmValuesByID;
 
 	void reportMissingDevice(const int deviceID, const std::string &EventName, const uint64_t eventID);
 	int getSunRiseSunSetMinutes(const std::string &what);

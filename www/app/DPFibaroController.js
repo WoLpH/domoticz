@@ -1,8 +1,7 @@
 define(['app'], function (app) {
 	app.controller('DPFibaroController', [ '$scope', '$rootScope', '$location', '$http', '$interval', function($scope,$rootScope,$location,$http,$interval) {
 
-		TargetTypeUpdate = function()
-		{
+		TargetTypeUpdate = function () {
 			var targetType = $("#linkparamstable #combotargettype option:selected").val();
 			switch(targetType) {
 			case "0":
@@ -54,8 +53,7 @@ define(['app'], function (app) {
 			}
 			
 		}
-		SaveConfiguration = function()
-		{
+		SaveConfiguration = function () {
 			var remoteurl = $('#fibaroremote #tcpaddress').val();
 			var cleanurl = remoteurl;
 			if (remoteurl.indexOf('://')>0) {
@@ -64,18 +62,15 @@ define(['app'], function (app) {
 			var username = $('#fibaroremote #username').val();
 			var password = $('#fibaroremote #password').val();
 			var linkactive = 0;	
-			if ($('#fibaroremote #fibarolinkenabled').is(":checked"))
-			{
+			if ($('#fibaroremote #fibarolinkenabled').is(":checked")) {
 				linkactive = 1;
 			}
 			var isversion4 = 0;	
-			if ($('#fibaroremote #fibaroisversion4').is(":checked"))
-			{
+			if ($('#fibaroremote #fibaroisversion4').is(":checked")) {
 				isversion4 = 1;
 			}
 			var debugenabled = 0;
-			if ($('#fibaroremote #debugenabled').is(":checked"))
-			{
+			if ($('#fibaroremote #debugenabled').is(":checked")) {
 				debugenabled = 1;
 			}
 			$.ajax({
@@ -92,8 +87,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		DeleteLink = function(idx)
-		{
+		DeleteLink = function (idx) {
 			bootbox.confirm($.t("Are you sure you want to remove this link?"), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -110,8 +104,7 @@ define(['app'], function (app) {
 		}
 			
 
-		AddLink = function(type)
-		{
+		AddLink = function (type) {
 			var idx = $.linkIdx;
 			if (type == "a") {idx="0"};
 			var deviceid = $("#linkparamstable #devicename option:selected").val();
@@ -124,13 +117,11 @@ define(['app'], function (app) {
 			var targetdeviceid = $('#linkparamstable #targetdeviceid').val();
 			var targetproperty = $('#linkparamstable #targetproperty').val();
 			var linkactive = 0;	
-			if ($('#linkparamstable #linkenabled').is(":checked"))
-			{
+			if ($('#linkparamstable #linkenabled').is(":checked")) {
 				linkactive = 1;
 			}
 			var includeunit = 0;
-			if ($('#linkparamstable #includeunit').is(":checked"))
-			{
+			if ($('#linkparamstable #includeunit').is(":checked")) {
 				includeunit = 1;
 			}
 			
@@ -162,8 +153,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		GetConfig = function() 
-		{
+		GetConfig = function () {
 			$.ajax({
 				url: "json.htm?type=command&param=getfibarolinkconfig",
 				async: false, 
@@ -196,8 +186,7 @@ define(['app'], function (app) {
 		}
 			
 
-		ValueSelectorUpdate = function()
-		{
+		ValueSelectorUpdate = function () {
 			var deviceid = $("#linkparamstable #devicename option:selected").val();	
 			var select = document.getElementById("combosendvalue");
 			select.options.length = 0;
@@ -218,8 +207,7 @@ define(['app'], function (app) {
 		  });
 		}
 			
-		RefreshLinkTable = function()
-		{
+		RefreshLinkTable = function () {
 		  $('#modal').show();
 
 			$('#linkparamstable #linkupdate').attr("class", "btnstyle3-dis");
@@ -302,8 +290,7 @@ define(['app'], function (app) {
 		  $('#modal').hide();
 		}
 
-		GetDeviceValueOptionWording = function(idx,pos)
-		{
+		GetDeviceValueOptionWording = function (idx, pos) {
 			var wording = "";
 			$.ajax({
 			 url: "json.htm?type=command&param=getdevicevalueoptionwording&idx="+idx+"&pos="+pos,
@@ -318,8 +305,7 @@ define(['app'], function (app) {
 		   return wording;
 		}
 
-		ShowLinks = function()
-		{
+		ShowLinks = function () {
 			$('#fibaromain').i18n();
 			var oTable = $('#linktable').dataTable( {
 			  "sDom": '<"H"lfrC>t<"F"ip>',
@@ -393,8 +379,7 @@ define(['app'], function (app) {
 
 		init();
 
-		function init()
-		{
+		function init() {
 			$scope.MakeGlobalConfig();
 			//Get devices
 			$("#fibaromain #devicename").html("");

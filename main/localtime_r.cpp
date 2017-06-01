@@ -4,7 +4,7 @@
 time_t m_lasttime=time(NULL);
 boost::mutex TimeMutex_;
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__USE_POSIX)
 	#define localtime_r
 #endif
 
@@ -50,7 +50,8 @@ time_t mytime(time_t * _Time)
 bool ParseSQLdatetime(time_t &time, struct tm &result, const std::string szSQLdate) {
 	time_t now = mytime(NULL);
 	struct tm ltime;
-	localtime_r(&now,&ltime);
+	if (localtime_r(&now, &ltime) == NULL)
+		return false;
 	return ParseSQLdatetime(time, result, szSQLdate, ltime.tm_isdst);
 }
 
@@ -59,6 +60,7 @@ bool ParseSQLdatetime(time_t &time, struct tm &result, const std::string szSQLda
 		return false;
 	}
 
+	unsigned char i=0;
 	bool goodtime = false;
 	while (!goodtime) {
 		result.tm_isdst = isdst;
@@ -68,14 +70,20 @@ bool ParseSQLdatetime(time_t &time, struct tm &result, const std::string szSQLda
 		result.tm_hour = atoi(szSQLdate.substr(11, 2).c_str());
 		result.tm_min = atoi(szSQLdate.substr(14, 2).c_str());
 		result.tm_sec = atoi(szSQLdate.substr(17, 2).c_str());
+		if (i > 1)
+			result.tm_hour++; // required to make result consistent across platforms
 		time = mktime(&result);
 		if (time == -1) {
 			if (isdst == 0) { return false; }
 			isdst = 0;
 		} else {
 			goodtime = ((result.tm_isdst == isdst) || (isdst == -1));
-			isdst = result.tm_isdst;
+			if (i==0)
+				isdst = result.tm_isdst;
+			else // time is inside DST "black hole" range
+				isdst = -1;
 		}
+		i++;
 	}
 	return true;
 }
@@ -87,14 +95,16 @@ bool ParseSQLdatetime(time_t &time, struct tm &result, const std::string szSQLda
  * Returns false if no time can be created
  */
 
-bool constructTime(time_t &time, struct tm &result, int year, int month, int day, int hour, int minute, int second) {
+bool constructTime(time_t &time, struct tm &result, const int year, const int month, const int day, const int hour, const int minute, const int second) {
 	time_t now = mytime(NULL);
 	struct tm ltime;
-	localtime_r(&now,&ltime);
+	if (localtime_r(&now, &ltime) == NULL)
+		return false;
 	return constructTime(time, result, year, month, day, hour, minute, second, ltime.tm_isdst);
 }
 
-bool constructTime(time_t &time, struct tm &result, int year, int month, int day, int hour, int minute, int second, int isdst) {
+bool constructTime(time_t &time, struct tm &result, const int year, const int month, const int day, const int hour, const int minute, const int second, int isdst) {
+	unsigned char i=0;
 	bool goodtime = false;
 	while (!goodtime) {
 		result.tm_isdst = isdst;
@@ -104,14 +114,20 @@ bool constructTime(time_t &time, struct tm &result, int year, int month, int day
 		result.tm_hour = hour;
 		result.tm_min = minute;
 		result.tm_sec = second;
+		if (i > 1)
+			result.tm_hour++; // required to make result consistent across platforms
 		time = mktime(&result);
 		if (time == -1) {
 			if (isdst == 0) { return false; }
 			isdst = 0;
 		} else {
 			goodtime = ((result.tm_isdst == isdst) || (isdst == -1));
-			isdst = result.tm_isdst;
+			if (i==0)
+				isdst = result.tm_isdst;
+			else // time is inside DST "black hole" range
+				isdst = -1;
 		}
+		i++;
 	}
 	return true;
 }
@@ -124,12 +140,13 @@ bool constructTime(time_t &time, struct tm &result, int year, int month, int day
 bool getMidnight(time_t &time, struct tm &result) {
 	time_t now = mytime(NULL);
 	struct tm ltime;
-	localtime_r(&now,&ltime);
+	if (localtime_r(&now, &ltime) == NULL)
+		return false;
 	return constructTime(time, result, ltime.tm_year+1900, ltime.tm_mon+1, ltime.tm_mday, 0, 0, 0, ltime.tm_isdst);
 }
 
 bool getMidnight(time_t &time, struct tm &result, int year, int month, int day) {
-	return constructTime(time, result, year, month, day, 0, 0, 0);
+	return constructTime(time, result, year, month, day, 0, 0, 0, -1);
 }
 
 /* getNoon()
@@ -142,7 +159,8 @@ bool getMidnight(time_t &time, struct tm &result, int year, int month, int day) 
 bool getNoon(time_t &time, struct tm &result) {
 	time_t now = mytime(NULL);
 	struct tm ltime;
-	localtime_r(&now,&ltime);
+	if (localtime_r(&now, &ltime) == NULL)
+		return false;
 	return constructTime(time, result, ltime.tm_year+1900, ltime.tm_mon+1, ltime.tm_mday, 12, 0, 0, ltime.tm_isdst);
 }
 

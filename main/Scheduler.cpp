@@ -402,6 +402,7 @@ bool CScheduler::AdjustScheduleItem(tScheduleItem *pItem, bool bForceAddDay)
 	localtime_r(&atime, &ltime);
 	int isdst = ltime.tm_isdst;
 	struct tm tm1;
+	tm1.tm_isdst = -1;
 
 	unsigned long HourMinuteOffset = (pItem->startHour * 3600) + (pItem->startMin * 60);
 
@@ -542,13 +543,13 @@ bool CScheduler::AdjustScheduleItem(tScheduleItem *pItem, bool bForceAddDay)
 		nth_dow ndm(Occurence, Day, Month);
 		boost::gregorian::date d = ndm.get_date(ltime.tm_year + 1900);
 
-		constructTime(rtime,tm1,ltime.tm_year+1900,pItem->Month,d.day(),pItem->startHour,pItem->startMin,0,isdst);
+		constructTime(rtime, tm1, ltime.tm_year + 1900, pItem->Month, d.day(), pItem->startHour, pItem->startMin, 0, isdst);
 
 		if (rtime < atime) //past date/time
 		{
 			//schedule for next year
 			ltime.tm_year++;
-			constructTime(rtime,tm1,ltime.tm_year+1900,pItem->Month,d.day(),pItem->startHour,pItem->startMin,0,isdst);
+			constructTime(rtime, tm1, ltime.tm_year + 1900, pItem->Month, d.day(), pItem->startHour, pItem->startMin, 0, isdst);
 		}
 
 		rtime += roffset * 60; // add randomness
@@ -558,17 +559,16 @@ bool CScheduler::AdjustScheduleItem(tScheduleItem *pItem, bool bForceAddDay)
 	else
 		return false; //unknown timer type
 
-	if (bForceAddDay)
-	{
-		//item is scheduled for next day
-		rtime += (24 * 3600);
-	}
-
-	//Adjust timer by 1 day if we are in the past
-	while (rtime < atime + 60)
-	{
-		rtime += (24 * 3600);
-	}
+	// Adjust timer by 1 day if item is scheduled for next day or we are in the past
+        while (bForceAddDay || (rtime < atime + 60) )
+        {
+                if (tm1.tm_isdst == -1) // rtime was loaded from sunset/sunrise values; need to initialize tm1
+                        localtime_r(&rtime, &tm1);
+                struct tm tm2;
+                tm1.tm_mday++;
+                constructTime(rtime, tm2, tm1.tm_year + 1900, tm1.tm_mon + 1, tm1.tm_mday, tm1.tm_hour, tm1.tm_min, tm1.tm_sec, isdst);
+                bForceAddDay = false;
+        }
 
 	pItem->startTime = rtime;
 	return true;
@@ -1057,8 +1057,13 @@ namespace http {
 			int rnvalue = 0;
 			m_sql.GetPreferencesVar("ActiveTimerPlan", rnOldvalue);
 			rnvalue = atoi(request::findValue(&req, "ActiveTimerPlan").c_str());
-			if ((rnOldvalue != rnvalue) && ((rnvalue==0) || (rnvalue==1)))
+			if (rnOldvalue != rnvalue)
 			{
+				std::vector<std::vector<std::string> > result;
+				result = m_sql.safe_query("SELECT Name FROM TimerPlans WHERE (ID == %d)", rnvalue);
+				if (result.empty())
+					return; //timerplan not found!
+				_log.Log(LOG_STATUS, "Scheduler Timerplan changed (%d - %s)", rnvalue, result[0][0].c_str());
 				m_sql.UpdatePreferencesVar("ActiveTimerPlan", rnvalue);
 				m_sql.m_ActiveTimerPlan = rnvalue;
 				m_mainworker.m_scheduler.ReloadSchedules();

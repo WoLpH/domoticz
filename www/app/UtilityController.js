@@ -1,8 +1,9 @@
 define(['app'], function (app) {
 	app.controller('UtilityController', [ '$scope', '$rootScope', '$location', '$http', '$interval', 'permissions', function($scope,$rootScope,$location,$http,$interval,permissions) {
 
-		DeleteSetpointTimer = function(idx)
-		{
+		$scope.HasInitializedEditCustomSensorDialog = false;
+
+		DeleteSetpointTimer = function (idx) {
 			bootbox.confirm($.t("Are you sure to delete this timers?\n\nThis action can not be undone..."), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -21,8 +22,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		ClearSetpointTimers = function()
-		{
+		ClearSetpointTimers = function () {
 			bootbox.confirm($.t("Are you sure to delete ALL timers?\n\nThis action can not be undone!"), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -41,8 +41,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		GetSetpointTimerSettings = function()
-		{
+		GetSetpointTimerSettings = function () {
 			var tsettings = {};
 			tsettings.Active=$('#utilitycontent #timerparamstable #enabled').is(":checked");
 			tsettings.timertype=$("#utilitycontent #timerparamstable #combotype").val();
@@ -83,8 +82,7 @@ define(['app'], function (app) {
 			return tsettings;
 		}
 
-		UpdateSetpointTimer = function(idx)
-		{
+		UpdateSetpointTimer = function (idx) {
 			var tsettings=GetSetpointTimerSettings();
 			if (tsettings.timertype==5) {
 				if (tsettings.date=="") {
@@ -128,8 +126,7 @@ define(['app'], function (app) {
 			else if ((tsettings.timertype==11) || (tsettings.timertype==13)) {
 				tsettings.days = Math.pow(2, tsettings.weekday);
 			}
-			else if (tsettings.days==0)
-			{
+			else if (tsettings.days == 0) {
 				ShowNotify($.t('Please select some days!'), 2500, true);
 				return;
 			}
@@ -157,8 +154,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		AddSetpointTimer = function()
-		{
+		AddSetpointTimer = function () {
 			var tsettings=GetSetpointTimerSettings();
 			if (tsettings.timertype==5) {
 				if (tsettings.date=="") {
@@ -202,8 +198,7 @@ define(['app'], function (app) {
 			else if ((tsettings.timertype==11) || (tsettings.timertype==13)) {
 				tsettings.days = Math.pow(2, tsettings.weekday);
 			}
-			else if (tsettings.days==0)
-			{
+			else if (tsettings.days == 0) {
 				ShowNotify($.t('Please select some days!'), 2500, true);
 				return;
 			}
@@ -231,8 +226,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		EnableDisableSetpointDays = function(TypeStr, bDisabled)
-		{
+		EnableDisableSetpointDays = function (TypeStr, bDisabled) {
 				$('#utilitycontent #timerparamstable #ChkMon').prop('checked', ((TypeStr.indexOf("Mon") >= 0)||(TypeStr=="Everyday")||(TypeStr=="Weekdays")) ? true : false);
 				$('#utilitycontent #timerparamstable #ChkTue').prop('checked', ((TypeStr.indexOf("Tue") >= 0)||(TypeStr=="Everyday")||(TypeStr=="Weekdays")) ? true : false);
 				$('#utilitycontent #timerparamstable #ChkWed').prop('checked', ((TypeStr.indexOf("Wed") >= 0)||(TypeStr=="Everyday")||(TypeStr=="Weekdays")) ? true : false);
@@ -250,8 +244,7 @@ define(['app'], function (app) {
 				$('#utilitycontent #timerparamstable #ChkSun').attr('disabled', bDisabled);
 		}
 
-		RefreshSetpointTimerTable = function(idx)
-		{
+		RefreshSetpointTimerTable = function (idx) {
 		  $('#modal').show();
 
 			$('#updelclr #timerupdate').attr("class", "btnstyle3-dis");
@@ -492,8 +485,7 @@ define(['app'], function (app) {
 			return o;
 		};
 
-		ShowSetpointTimers = function (id,name, isdimmer, stype,devsubtype)
-		{
+		ShowSetpointTimers = function (id, name, isdimmer, stype, devsubtype) {
 			if (typeof $scope.mytimer != 'undefined') {
 				$interval.cancel($scope.mytimer);
 				$scope.mytimer = undefined;
@@ -626,16 +618,13 @@ define(['app'], function (app) {
 			$('#timerparamstable #days >option').remove();
 						
 			//fill hour/minute/days comboboxes
-			for (ii=0; ii<24; ii++)
-			{
+			for (ii = 0; ii < 24; ii++) {
 				$('#timerparamstable #combotimehour').append($('<option></option>').val(ii).html($.strPad(ii,2)));  
 			}
-			for (ii=0; ii<60; ii++)
-			{
+			for (ii = 0; ii < 60; ii++) {
 				$('#timerparamstable #combotimemin').append($('<option></option>').val(ii).html($.strPad(ii,2)));  
 			}
-			for (ii=1; ii<=31; ii++)
-			{
+			for (ii = 1; ii <= 31; ii++) {
 				$('#timerparamstable #days').append($('<option></option>').val(ii).html(ii));  
 			}
 		  
@@ -661,8 +650,7 @@ define(['app'], function (app) {
 			RefreshSetpointTimerTable(id);
 		}
 
-		MakeFavorite = function(id,isfavorite)
-		{
+		MakeFavorite = function (id, isfavorite) {
 			if (!permissions.hasPermission("Admin")) {
 				HideNotify();
 				ShowNotify($.t('You do not have permission to do that!'), 2500, true);
@@ -683,27 +671,12 @@ define(['app'], function (app) {
 		  });
 		}
 
-		EditUtilityDevice = function(idx,name,description)
-		{
-			if (typeof $scope.mytimer != 'undefined') {
-				$interval.cancel($scope.mytimer);
-				$scope.mytimer = undefined;
+		ConfigureEditCustomSensorDialog = function () {
+			if ($scope.HasInitializedEditCustomSensorDialog == true) {
+				return;
 			}
-		  $.devIdx=idx;
-		  $("#dialog-editutilitydevice #devicename").val(unescape(name));
-		  $("#dialog-editutilitydevice #devicedescription").val(unescape(description));
-		  $("#dialog-editutilitydevice" ).i18n();
-		  $("#dialog-editutilitydevice" ).dialog( "open" );
-		}
-
-		EditCustomSensorDevice = function(idx,name,description,customimage,sensortype,axislabel)
-		{
-			if (typeof $scope.mytimer != 'undefined') {
-				$interval.cancel($scope.mytimer);
-				$scope.mytimer = undefined;
-			}
+			$scope.HasInitializedEditCustomSensorDialog = true;
 			$.ddData=[];
-			$scope.CustomImages=[];
 			//Get Custom icons
 			$.ajax({
 			 url: "json.htm?type=custom_light_icons", 
@@ -731,15 +704,30 @@ define(['app'], function (app) {
 						}
 						img+="48_On.png";
 						$.ddData.push({ text: itext, value: item.idx, selected: bSelected, description: idescription, imageSrc: img });
-						$scope.CustomImages.push({ text: itext, value: item.idx, selected: bSelected, description: idescription, imageSrc: img });
 					});
-					if (totalItems>0) {
-						$scope.customimagesel=$scope.CustomImages[0];
-					}
 				}
 			 }
 			});
+		}
+
+		EditUtilityDevice = function (idx, name, description) {
+			if (typeof $scope.mytimer != 'undefined') {
+				$interval.cancel($scope.mytimer);
+				$scope.mytimer = undefined;
+			}
+			$.devIdx = idx;
+			$("#dialog-editutilitydevice #devicename").val(unescape(name));
+			$("#dialog-editutilitydevice #devicedescription").val(unescape(description));
+			$("#dialog-editutilitydevice").i18n();
+			$("#dialog-editutilitydevice").dialog("open");
+		}
 			
+		EditCustomSensorDevice = function (idx, name, description, customimage, sensortype, axislabel) {
+			if (typeof $scope.mytimer != 'undefined') {
+				$interval.cancel($scope.mytimer);
+				$scope.mytimer = undefined;
+			}
+			ConfigureEditCustomSensorDialog();
 			$.devIdx=idx;
 			$.sensorType=sensortype;
 			$("#dialog-editcustomsensordevice #devicename").val(unescape(name));
@@ -765,8 +753,7 @@ define(['app'], function (app) {
 			$("#dialog-editcustomsensordevice" ).dialog( "open" );
 		}
 
-		EditDistanceDevice = function(idx,name,description,switchtype)
-		{
+		EditDistanceDevice = function (idx, name, description, switchtype) {
 			if (typeof $scope.mytimer != 'undefined') {
 				$interval.cancel($scope.mytimer);
 				$scope.mytimer = undefined;
@@ -779,8 +766,7 @@ define(['app'], function (app) {
 		  $("#dialog-editdistancedevice" ).dialog( "open" );
 		}
 
-		EditMeterDevice = function(idx,name,description,switchtype,meteroffset,valuequantity,valueunits)
-		{
+		EditMeterDevice = function (idx, name, description, switchtype, meteroffset, valuequantity, valueunits) {
 			if (typeof $scope.mytimer != 'undefined') {
 				$interval.cancel($scope.mytimer);
 				$scope.mytimer = undefined;
@@ -813,8 +799,7 @@ define(['app'], function (app) {
 		  $("#dialog-editmeterdevice" ).dialog( "open" );
 		}
 
-		EditEnergyDevice = function(idx,name,description,switchtype, devoptions)
-		{
+		EditEnergyDevice = function (idx, name, description, switchtype, devoptions) {
 			if (typeof $scope.mytimer != 'undefined') {
 				$interval.cancel($scope.mytimer);
 				$scope.mytimer = undefined;
@@ -831,8 +816,7 @@ define(['app'], function (app) {
 		  $("#dialog-editenergydevice" ).dialog( "open" );
 		}
 
-		EditSetPoint = function(idx,name,description,setpoint,isprotected)
-		{
+		EditSetPoint = function (idx, name, description, setpoint, isprotected) {
 			if (typeof $scope.mytimer != 'undefined') {
 				$interval.cancel($scope.mytimer);
 				$scope.mytimer = undefined;
@@ -849,8 +833,7 @@ define(['app'], function (app) {
 			});
 		}
 		
-		EditThermostatClock = function(idx,name,description,daytime,isprotected)
-		{
+		EditThermostatClock = function (idx, name, description, daytime, isprotected) {
 			if (typeof $scope.mytimer != 'undefined') {
 				$interval.cancel($scope.mytimer);
 				$scope.mytimer = undefined;
@@ -869,8 +852,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		EditThermostatMode = function(idx,name,description,actmode,modes,isprotected)
-		{
+		EditThermostatMode = function (idx, name, description, actmode, modes, isprotected) {
 			HandleProtection(isprotected, function() {
 				var sarray=modes.split(";");
 				$.devIdx=idx;
@@ -893,8 +875,7 @@ define(['app'], function (app) {
 				$("#dialog-editthermostatmode" ).dialog( "open" );
 			});
 		}
-		EditThermostatFanMode = function(idx,name,description,actmode,modes,isprotected)
-		{
+		EditThermostatFanMode = function (idx, name, description, actmode, modes, isprotected) {
 			HandleProtection(isprotected, function() {
 				var sarray=modes.split(";");
 				$.devIdx=idx;
@@ -918,13 +899,11 @@ define(['app'], function (app) {
 			});
 		}
 
-		AddUtilityDevice = function()
-		{
+		AddUtilityDevice = function () {
 		  bootbox.alert($.t('Please use the devices tab for this.'));
 		}
 
-		RefreshUtilities = function()
-		{
+		RefreshUtilities = function () {
 			if (typeof $scope.mytimer != 'undefined') {
 				$interval.cancel($scope.mytimer);
 				$scope.mytimer = undefined;
@@ -1012,7 +991,9 @@ define(['app'], function (app) {
 						}
 						else if (item.SubType == "Alert") {
 							status=item.Data;
-							img='<img src="images/Alert48_' + item.Level + '.png" height="48" width="48">';
+									var aLevel = item.Level;
+									if (aLevel > 4) aLevel = 4;
+									img = '<img src="images/Alert48_' + aLevel + '.png" height="48" width="48">';
 						}
 						else if (item.Type == "Lux") {
 							status=item.Data;
@@ -1095,8 +1076,7 @@ define(['app'], function (app) {
 						if ($(id + " #lastupdate").html()!=item.LastUpdate) {
 							$(id + " #lastupdate").html(item.LastUpdate);
 						}
-						if (img!="")
-						{
+								if (img != "") {
 							if ($(id + " #img").html()!=img) {
 								$(id + " #img").html(img);
 							}
@@ -1114,8 +1094,7 @@ define(['app'], function (app) {
 			}, 10000);
 		}
 
-		ShowUtilities = function()
-		{
+		ShowUtilities = function () {
 			if (typeof $scope.mytimer != 'undefined') {
 				$interval.cancel($scope.mytimer);
 				$scope.mytimer = undefined;
@@ -1186,8 +1165,7 @@ define(['app'], function (app) {
 					$.LastUpdateTime=parseInt(data.ActTime);
 				}
 				$.each(data.result, function(i,item){
-				  if (i % 3 == 0)
-				  {
+							if (i % 3 == 0) {
 					//add devider
 					if (bHaveAddedDevider == true) {
 					  //close previous devider
@@ -1623,8 +1601,7 @@ define(['app'], function (app) {
 			//close previous devider
 			htmlcontent+='</div>\n';
 		  }
-		  if (htmlcontent == '')
-		  {
+			if (htmlcontent == '') {
 			htmlcontent='<h2>' + $.t('No Utility sensors found or added in the system...') + '</h2>';
 		  }
 		  $('#modal').hide();
@@ -1689,8 +1666,7 @@ define(['app'], function (app) {
 
 		init();
 
-		function init()
-		{
+		function init() {
 			//global var
 			$.devIdx=0;
 			$.LastUpdateTime=parseInt(0);

@@ -1,8 +1,7 @@
 define(['app'], function (app) {
 	app.controller('UsersController', [ '$scope', '$rootScope', '$location', '$http', '$interval','md5', function($scope,$rootScope,$location,$http,$interval,md5) {
 
-		DeleteUser = function(idx)
-		{
+		DeleteUser = function (idx) {
 			bootbox.confirm($.t("Are you sure you want to delete this User?"), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -21,20 +20,17 @@ define(['app'], function (app) {
 			});
 		}
 
-		GetUserSettings = function()
-		{
+		GetUserSettings = function () {
 			var csettings = {};
 
 			csettings.bEnabled=$('#usercontent #userparamstable #enabled').is(":checked");
 			csettings.username=$("#usercontent #userparamstable #username").val();
-			if (csettings.username=="")
-			{
+			if (csettings.username == "") {
 				ShowNotify($.t('Please enter a Username!'), 2500, true);
 				return;
 			}
 			csettings.password=$("#usercontent #userparamstable #userpassword").val();
-			if (csettings.password=="")
-			{
+			if (csettings.password == "") {
 				ShowNotify($.t('Please enter a Password!'), 2500, true);
 				return;
 			}
@@ -69,8 +65,7 @@ define(['app'], function (app) {
 			return csettings;
 		}
 
-		UpdateUser = function(idx)
-		{
+		UpdateUser = function (idx) {
 			var csettings=GetUserSettings();
 			if (typeof csettings == 'undefined') {
 				return;
@@ -95,8 +90,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		SaveUserDevices = function()
-		{
+		SaveUserDevices = function () {
 			var selecteddevices = $("#usercontent .multiselect option:selected").map(function(){ return this.value }).get().join(";");
 			$.ajax({
 				 url: "json.htm?type=setshareduserdevices&idx=" + $.devIdx + "&devices=" + selecteddevices,
@@ -111,8 +105,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		EditSharedDevices = function(idx,name)
-		{
+		EditSharedDevices = function (idx, name) {
 			$.devIdx=idx;
 			cursordefault();
 			var htmlcontent = '';
@@ -146,8 +139,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		AddUser = function()
-		{
+		AddUser = function () {
 			var csettings=GetUserSettings();
 			if (typeof csettings == 'undefined') {
 				return;
@@ -175,8 +167,7 @@ define(['app'], function (app) {
 			});		
 		}
 
-		RefreshUserTable = function()
-		{
+		RefreshUserTable = function () {
 			$('#modal').show();
 
 			$.devIdx=-1;
@@ -277,8 +268,7 @@ define(['app'], function (app) {
 		  $('#modal').hide();
 		}
 
-		ShowUsers = function()
-		{
+		ShowUsers = function () {
 			var oTable;
 			
 			$('#modal').show();
@@ -315,8 +305,7 @@ define(['app'], function (app) {
 
 		init();
 
-		function init()
-		{
+		function init() {
 			$scope.MakeGlobalConfig();
 			//Get devices
 			$("#userdevices #userdevicestable #devices").html("");

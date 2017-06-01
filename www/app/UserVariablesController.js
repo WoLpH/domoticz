@@ -4,8 +4,7 @@ define(['app'], function (app) {
 		$scope.userVariableIdx=0;
 		$scope.varNames = [];
 
-		DeleteVariable = function(idx)
-		{
+		DeleteVariable = function (idx) {
 			bootbox.confirm($.t("Are you sure you want to remove this variable?"), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -20,8 +19,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		AddVariable = function(type)
-		{
+		AddVariable = function (type) {
 			var idx = $scope.userVariableIdx;
 			var uservariablename = $('#uservariablesedittable #uservariablename').val();
 			var uservariabletype = $('#uservariablesedittable #uservariabletype option:selected').val();
@@ -64,8 +62,7 @@ define(['app'], function (app) {
 				
 		}
 
-		$scope.RefreshUserVariablesTable = function()
-		{
+		$scope.RefreshUserVariablesTable = function () {
 		  $('#modal').show();
 			$scope.userVariableIdx=0;
 			$('#uservariableupdate').attr("class", "btnstyle3-dis");
@@ -153,8 +150,7 @@ define(['app'], function (app) {
 		  $('#modal').hide();
 		}
 
-		$scope.ShowUserVariables = function()
-		{
+		$scope.ShowUserVariables = function () {
 			$('#fibaromain').i18n();
 			var oTable = $('#uservariablestable').dataTable( {
 			  "sDom": '<"H"lfrC>t<"F"ip>',
@@ -177,8 +173,7 @@ define(['app'], function (app) {
 
 		init();
 
-		function init()
-		{
+		function init() {
 			$scope.MakeGlobalConfig();
 			$scope.ShowUserVariables();
 		};

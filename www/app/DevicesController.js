@@ -1,8 +1,7 @@
 define(['app'], function (app) {
 	app.controller('DevicesController', [ '$scope', '$rootScope', '$location', '$http', '$interval', function($scope,$rootScope,$location,$http,$interval) {
 
-		AddDevice = function(idx,itemname)
-		{
+		AddDevice = function (idx, itemname) {
 			$.devIdx = idx;
 			if (name!='Unknown') {
 				$( "#dialog-adddevice #devicename" ).val(unescape(itemname));
@@ -11,8 +10,7 @@ define(['app'], function (app) {
 			$("#dialog-adddevice").dialog( "open" );
 		}
 
-		RenameDevice = function(idx,itype,itemname)
-		{
+		RenameDevice = function (idx, itype, itemname) {
 			$.devType=itype;
 			$.devIdx = idx;
 			if (name!='Unknown') {
@@ -22,8 +20,7 @@ define(['app'], function (app) {
 			$("#dialog-renamedevice").dialog( "open" );
 		}
 
-		AddLightDeviceDev = function (idx, name)
-		{
+		AddLightDeviceDev = function (idx, name) {
 			$.devIdx = idx;
 			
 			$("#dialog-addlightdevicedev #combosubdevice").html("");
@@ -42,8 +39,7 @@ define(['app'], function (app) {
 			$("#dialog-addlightdevicedev" ).dialog( "open" );
 		}
 
-		SetUnused = function(idx)
-		{
+		SetUnused = function (idx) {
 			bootbox.confirm($.t("Are you sure to remove this Device from your used devices?"), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -58,14 +54,12 @@ define(['app'], function (app) {
 			});
 		}
 
-		InvertCheck = function()
-		{
+		InvertCheck = function () {
 			$('#devices input:checkbox').each(function(){
 				$(this).prop('checked', !$(this).is(":checked"));
 			});
 		}
-		DeleteMultipleDevices = function()
-		{
+		DeleteMultipleDevices = function () {
 			var totalselected=$('#devices input:checkbox:checked').length;
 			if (totalselected==0) {
 				bootbox.alert($.t('No Devices selected to Delete!'));
@@ -94,8 +88,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		RefreshLightSwitchesComboArray = function()
-		{
+		RefreshLightSwitchesComboArray = function () {
 			$.LightsAndSwitches = [];
 		  $.ajax({
 			 url: "json.htm?type=command&param=getlightswitches", 
@@ -115,8 +108,7 @@ define(['app'], function (app) {
 		  });
 		}
 
-		ShowDevices = function(filter)
-		{
+		ShowDevices = function (filter) {
 			if (typeof filter != 'undefined') {
 				$.DevicesFilter=filter;
 			}
@@ -210,14 +202,18 @@ define(['app'], function (app) {
 				  var TypeImg=item.TypeImg;
 				  var itemImage='<img src="images/' + TypeImg + '.png" width="16" height="16">';
 				  if (TypeImg.indexOf("Alert")==0) {
-									itemImage='<img src="images/Alert48_' + item.Level + '.png" width="16" height="16">';
+								var aLevel = item.Level;
+								if (aLevel > 4) aLevel = 4;
+								itemImage = '<img src="images/Alert48_' + aLevel + '.png" width="16" height="16">';
 				  }
 				  else if ((TypeImg.indexOf("lightbulb")==0)||(TypeImg.indexOf("dimmer")==0)) {
 									if (
 											(item.Status == 'On')||
 											(item.Status == 'Chime')||
 											(item.Status == 'Group On')||
-											(item.Status.indexOf('Set ') == 0)
+									(item.Status.indexOf('Set ') == 0) ||
+									(item.Status.indexOf('NightMode') == 0) ||
+									(item.Status.indexOf('Disco ') == 0)
 										 ) {
 													itemImage='<img src="images/lightbulb.png" title="Turn Off" onclick="SwitchLight(' + item.idx + ',\'Off\',ShowDevices);" class="lcursor">';
 									}
@@ -287,8 +283,7 @@ define(['app'], function (app) {
 						if (
 								(item.Type.indexOf("Light")==0)||
 								(item.Type.indexOf("Security")==0)
-							 )
-						{
+									) {
 							itemSubIcons+='<img src="images/add.png" title="' + $.t('Add Light/Switch Device') + '" onclick="AddLightDeviceDev(' + item.idx +',\'' + escape(item.Name) + '\')">';
 						}
 						else {
@@ -304,8 +299,7 @@ define(['app'], function (app) {
 						(item.Type.indexOf("RFY")==0)||
 						(item.Type.indexOf("ASA")==0)||
 						(item.Type.indexOf("Blinds")==0)
-					 )
-				  {
+							) {
 					itemSubIcons+='&nbsp;<img src="images/log.png" title="' + $.t('Log') +'" onclick="ShowLightLog(' + item.idx + ',\'' + escape(item.Name)  + '\', \'#devicescontent\', \'ShowDevices\');">';
 				  }
 				  else if ((item.Type.indexOf("Temp")==0)||(item.Type.indexOf("Thermostat")==0)||(item.Type.indexOf("Humidity")==0)) {
@@ -455,8 +449,7 @@ define(['app'], function (app) {
 		  });
 		}
 
-		EnableDisableSubDevices = function(bEnabled)
-		{
+		EnableDisableSubDevices = function (bEnabled) {
 			var trow=$("#dialog-addlightdevicedev #lighttable #subdevice");
 			if (bEnabled == true) {
 				trow.show();
@@ -491,8 +484,7 @@ define(['app'], function (app) {
 		};
 		init();
 
-		function init()
-		{
+		function init() {
 			//global var
 			$.devIdx=0;
 			$.LightsAndSwitches = [];
@@ -571,8 +563,7 @@ define(['app'], function (app) {
 			  bValid = bValid && checkLength( $("#dialog-addlightdevicedev #devicename"), 2, 100 );
 			  var bIsSubDevice=$("#dialog-addlightdevicedev #lighttable #how_2").is(":checked");
 			  var MainDeviceIdx="";
-			  if (bIsSubDevice)
-			  {
+				if (bIsSubDevice) {
 					var MainDeviceIdx=$("#dialog-addlightdevicedev #combosubdevice option:selected").val();
 					if (typeof MainDeviceIdx == 'undefined') {
 						bootbox.alert($.t('No Main Device Selected!'));

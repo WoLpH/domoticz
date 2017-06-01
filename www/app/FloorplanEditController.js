@@ -26,14 +26,12 @@ define(['app'], function (app) {
 		}
 
 		PolyClick = function(click) {
-			if ($("#floorplangroup")[0].getAttribute("zoomed") == "true")
-			{
+			if ($("#floorplangroup")[0].getAttribute("zoomed") == "true") {
 				$("#floorplangroup")[0].setAttribute("transform", "translate(0,0) scale(1)");
 				$("#DeviceContainer")[0].setAttribute("transform", "translate(0,0) scale(1)");
 				$("#floorplangroup")[0].setAttribute("zoomed", "false");
 			}
-			else
-			{
+			else {
 				var borderRect = click.target.getBBox(); // polygon bounding box
 				var margin = 0.1;  // 10% margin around polygon
 				var marginX = borderRect.width * margin;
@@ -54,10 +52,8 @@ define(['app'], function (app) {
 
 		FloorplanClick = function(click) {
 			// make sure we aren't zoomed in.
-			if ($("#floorplangroup")[0].getAttribute("zoomed") != "true")
-			{
-				if ($("#roompolyarea").attr("title") != "")
-				{
+			if ($("#floorplangroup")[0].getAttribute("zoomed") != "true") {
+				if ($("#roompolyarea").attr("title") != "") {
 					var Scale = Device.xImageSize / $("#floorplaneditor").width();
 					var offset = $("#floorplanimage").offset();
 					var points = $("#roompolyarea").attr("points");
@@ -67,10 +63,12 @@ define(['app'], function (app) {
 						points = points + ",";
 					} else {
 						$("#floorplangroup")[0].appendChild(makeSVGnode('circle', { id: "firstclick", cx:xPoint, cy:yPoint, r:2, class:'hoverable' }, ''));
-						$(".hoverable").css({'fill': $.myglobals.RoomColour,
+						$(".hoverable").css({
+							'fill': $.myglobals.RoomColour,
 												'fill-opacity': $.myglobals.ActiveRoomOpacity/100,
 												'stroke': $.myglobals.RoomColour,
-												'stroke-opacity': 90});
+							'stroke-opacity': 90
+						});
 					}
 					points = points + xPoint + "," + yPoint;
 					$("#roompolyarea").attr("points",  points );
@@ -78,8 +76,7 @@ define(['app'], function (app) {
 				}
 				else ShowNotify('Select a Floorplan and Room first.', 2500, true);
 			}
-			else
-			{
+			else {
 				PolyClick(click);
 			}
 		}
@@ -138,7 +135,8 @@ define(['app'], function (app) {
 			
 			oTable.fnClearTable();
 
-			$.ajax({url: "json.htm?type=command&param=getfloorplanimages", 
+			$.ajax({
+				url: "json.htm?type=command&param=getfloorplanimages",
 					async: false, 
 					dataType: 'json',
 					success: function(data) {
@@ -256,14 +254,12 @@ define(['app'], function (app) {
 			var csettings = {};
 
 			csettings.name=$("#dialog-add-edit-floorplan #floorplanname").val();
-			if (csettings.name=="")
-			{
+			if (csettings.name == "") {
 				ShowNotify('Please enter a Name!', 2500, true);
 				return;
 			}
 			csettings.image=$("#dialog-add-edit-floorplan #imagename").val();
-			if (csettings.image=="")
-			{
+			if (csettings.image == "") {
 				ShowNotify('Please enter an image filename!', 2500, true);
 				return;
 			}
@@ -378,10 +374,12 @@ define(['app'], function (app) {
 				}
 				if (typeof data.ActiveRoomOpacity != 'undefined') {
 					$.myglobals.ActiveRoomOpacity = data.ActiveRoomOpacity;
-					$(".hoverable").css({'fill': $.myglobals.RoomColour,
+							$(".hoverable").css({
+								'fill': $.myglobals.RoomColour,
 										 'fill-opacity': $.myglobals.ActiveRoomOpacity/100,
 										 'stroke': $.myglobals.RoomColour,
-										 'stroke-opacity': 90});
+								'stroke-opacity': 90
+							});
 				}
 				if (typeof data.InactiveRoomOpacity != 'undefined') {
 					$.myglobals.InactiveRoomOpacity = data.InactiveRoomOpacity;
@@ -524,7 +522,8 @@ define(['app'], function (app) {
 				"bFilter": false,
 				"bLengthChange": false,
 				language: $.DataTableLanguage,
-				"iDisplayLength" : 5 });
+				"iDisplayLength": 5
+			});
 
 			RefreshUnusedDevicesComboArray();
 			
@@ -576,10 +575,12 @@ define(['app'], function (app) {
 						});
 						if ((typeof $.myglobals.RoomColour != 'undefined') && 
 							(typeof $.myglobals.InactiveRoomOpacity != 'undefined')) {
-							$(".nothoverable").css({'fill': $.myglobals.RoomColour,
+							$(".nothoverable").css({
+								'fill': $.myglobals.RoomColour,
 													'fill-opacity': $.myglobals.InactiveRoomOpacity/100,
 													'stroke': $.myglobals.RoomColour,
-													'stroke-opacity': 90});
+								'stroke-opacity': 90
+							});
 						}
 						/* Add a click handler to the rows - this could be used as a callback */
 						$("#plantable2 tbody").off()
@@ -836,8 +837,7 @@ define(['app'], function (app) {
 
 		init();
 
-		function init()
-		{
+		function init() {
 			Device.initialise();
 			$scope.MakeGlobalConfig();
 			ShowFloorplans();

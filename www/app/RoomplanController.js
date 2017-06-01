@@ -1,8 +1,7 @@
 define(['app'], function (app) {
 	app.controller('RoomplanController', [ '$scope', '$rootScope', '$location', '$http', '$interval', 'permissions', function($scope,$rootScope,$location,$http,$interval,permissions) {
 
-		ChangePlanOrder = function(order, planid)
-		{
+		ChangePlanOrder = function (order, planid) {
 			if (!permissions.hasPermission("Admin")) {
 				HideNotify();
 				ShowNotify($.t('You do not have permission to do that!'), 2500, true);
@@ -17,8 +16,7 @@ define(['app'], function (app) {
 			 }
 		  });
 		}
-		ChangeDeviceOrder = function(order, devid)
-		{
+		ChangeDeviceOrder = function (order, devid) {
 			if (!permissions.hasPermission("Admin")) {
 				HideNotify();
 				ShowNotify($.t('You do not have permission to do that!'), 2500, true);
@@ -34,8 +32,7 @@ define(['app'], function (app) {
 		  });
 		}
 
-		AddNewPlan = function()
-		{
+		AddNewPlan = function () {
 			$( "#dialog-add-edit-plan" ).dialog({
 				resizable: false,
 				width: 390,
@@ -61,8 +58,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		EditPlan = function(idx)
-		{
+		EditPlan = function (idx) {
 			$( "#dialog-add-edit-plan" ).dialog({
 				resizable: false,
 				width: 390,
@@ -88,8 +84,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		DeletePlan = function(idx)
-		{
+		DeletePlan = function (idx) {
 			bootbox.confirm($.t("Are you sure you want to delete this Plan?"), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -109,21 +104,18 @@ define(['app'], function (app) {
 			});
 		}
 
-		GetPlanSettings = function()
-		{
+		GetPlanSettings = function () {
 			var csettings = {};
 
 			csettings.name=encodeURIComponent($("#dialog-add-edit-plan #planname").val());
-			if (csettings.name=="")
-			{
+			if (csettings.name == "") {
 				ShowNotify('Please enter a Name!', 2500, true);
 				return;
 			}
 			return csettings;
 		}
 
-		UpdatePlan = function(idx)
-		{
+		UpdatePlan = function (idx) {
 			var csettings=GetPlanSettings();
 			if (typeof csettings == 'undefined') {
 				return;
@@ -142,8 +134,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		AddPlan = function()
-		{
+		AddPlan = function () {
 			var csettings=GetPlanSettings();
 			if (typeof csettings == 'undefined') {
 				return;
@@ -162,8 +153,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		RefreshPlanTable = function()
-		{
+		RefreshPlanTable = function () {
 			$('#modal').show();
 
 			$.devIdx=-1;
@@ -260,8 +250,7 @@ define(['app'], function (app) {
 		  $('#modal').hide();
 		}
 
-		RefreshUnusedDevicesComboArray = function()
-		{
+		RefreshUnusedDevicesComboArray = function () {
 			$.UnusedDevices = [];
 			$("#plancontent #comboactivedevice").empty();
 			$.ajax({
@@ -287,8 +276,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		ShowPlans = function()
-		{
+		ShowPlans = function () {
 			var oTable;
 			
 			$('#modal').show();
@@ -334,8 +322,7 @@ define(['app'], function (app) {
 			RefreshPlanTable();
 		}
 
-		RefreshActiveDevicesTable = function(idx)
-		{
+		RefreshActiveDevicesTable = function (idx) {
 			$.LastPlan=idx;
 			$('#modal').show();
 
@@ -407,8 +394,7 @@ define(['app'], function (app) {
 		  $('#modal').hide();
 		}
 
-		AddActiveDevice = function()
-		{
+		AddActiveDevice = function () {
 			if ($.devIdx==-1) {
 				bootbox.alert('No Plan Selected!');
 				return;
@@ -447,8 +433,7 @@ define(['app'], function (app) {
 			
 		}
 
-		DeleteActiveDevice = function(idx)
-		{
+		DeleteActiveDevice = function (idx) {
 			bootbox.confirm($.t("Are you sure to delete this Active Device?\n\nThis action can not be undone..."), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -464,8 +449,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		ClearActiveDevices = function()
-		{
+		ClearActiveDevices = function () {
 			bootbox.confirm($.t("Are you sure to delete ALL Active Devices?\n\nThis action can not be undone!!"), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -483,8 +467,7 @@ define(['app'], function (app) {
 
 		init();
 
-		function init()
-		{
+		function init() {
 			$scope.MakeGlobalConfig();
 		  ShowPlans();
 		};

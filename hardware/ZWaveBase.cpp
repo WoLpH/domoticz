@@ -280,7 +280,7 @@ void ZWaveBase::SendSwitchIfNotExists(const _tZWaveDevice *pDevice)
 		int level = pDevice->intvalue;
 
 		// Simple on/off device, make sure we only have 0 or 255
-		if (pDevice->devType == ZDTYPE_SWITCH_NORMAL)
+		if ((pDevice->devType == ZDTYPE_SWITCH_NORMAL)|| (pDevice->devType == ZDTYPE_CENTRAL_SCENE))
 			level = (level == 0) ? 0 : 255;
 
 		// Now check the values
@@ -346,7 +346,7 @@ void ZWaveBase::SendDevice2Domoticz(const _tZWaveDevice *pDevice)
 		BatLevel = pDevice->batValue;
 	}
 
-	if ((pDevice->devType==ZDTYPE_SWITCH_NORMAL)||(pDevice->devType==ZDTYPE_SWITCH_DIMMER))
+	if ((pDevice->devType==ZDTYPE_SWITCH_NORMAL)||(pDevice->devType==ZDTYPE_SWITCH_DIMMER)||(pDevice->devType== ZDTYPE_CENTRAL_SCENE))
 	{
 		//Send as pTypeGeneralSwitch, sSwitchGeneralSwitch
 		_tGeneralSwitch gswitch;
@@ -359,7 +359,7 @@ void ZWaveBase::SendDevice2Domoticz(const _tZWaveDevice *pDevice)
 		int level = pDevice->intvalue;
 
 		// Simple on/off device, make sure we only have 0 or 255
-		if (pDevice->devType == ZDTYPE_SWITCH_NORMAL)
+		if ((pDevice->devType == ZDTYPE_SWITCH_NORMAL)|| (pDevice->devType == ZDTYPE_CENTRAL_SCENE))
 			level = (level == 0) ? 0 : 255;
 
 		// Now check the values
@@ -697,11 +697,13 @@ void ZWaveBase::SendDevice2Domoticz(const _tZWaveDevice *pDevice)
 	}
 	else if (pDevice->devType == ZDTYPE_SENSOR_WATER)
 	{
-		SendMeterSensor(ID3, ID4, BatLevel, pDevice->floatValue,"Water");
+		uint16_t NodeID = (ID3 << 8) | ID4;
+		SendRainSensor(NodeID, BatLevel, pDevice->floatValue*1000.0f, "Water");
+		//SendMeterSensor(ID3, ID4, BatLevel, pDevice->floatValue,"Water");
 	}
 	else if (pDevice->devType == ZDTYPE_SENSOR_CO2)
 	{
-		SendAirQualitySensor(ID3, ID4, BatLevel, int(pDevice->floatValue), "CO2 Sensor");
+		SendAirQualitySensor(ID3, (uint8_t)pDevice->orgInstanceID, BatLevel, int(pDevice->floatValue), "CO2 Sensor");
 	}
 	else if (pDevice->devType == ZDTYPE_SENSOR_MOISTURE)
 	{
@@ -752,6 +754,21 @@ void ZWaveBase::SendDevice2Domoticz(const _tZWaveDevice *pDevice)
 		gDevice.intval1 = (int)(ID1 << 24) | (ID2 << 16) | (ID3 << 8) | ID4;
 		gDevice.intval2 = pDevice->intvalue;
 		sDecodeRXMessage(this, (const unsigned char *)&gDevice, "Thermostat Fan Mode", BatLevel);
+	}
+	else if (pDevice->devType == ZDTYPE_ALARM)
+	{
+		_tGeneralDevice gDevice;
+		gDevice.subtype = sTypeZWaveAlarm;
+		gDevice.id = pDevice->Alarm_Type;
+		gDevice.intval1 = (int)(ID1 << 24) | (ID2 << 16) | (ID3 << 8) | ID4;
+		gDevice.intval2 = pDevice->intvalue;
+		char szTmp[100];
+		sprintf(szTmp, "Alarm Type: %s %d(0x%02X)", pDevice->label.c_str(), pDevice->Alarm_Type, pDevice->Alarm_Type);
+		sDecodeRXMessage(this, (const unsigned char *)&gDevice, szTmp, BatLevel);
+	}
+	else if (pDevice->devType == ZDTYPE_SENSOR_CUSTOM)
+	{
+		SendCustomSensor(ID3, ID4, BatLevel, pDevice->floatValue, pDevice->label, pDevice->custom_label);
 	}
 }
 

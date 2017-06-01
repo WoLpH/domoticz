@@ -1,8 +1,7 @@
 define(['app'], function (app) {
 	app.controller('ScenesController', [ '$scope', '$rootScope', '$location', '$http', '$interval', 'permissions', function($scope,$rootScope,$location,$http,$interval,permissions) {
 
-		RemoveCode = function(idx, code)
-		{
+		RemoveCode = function (idx, code) {
 			if($("#scenecontent #removecode").hasClass('disabled')) {
 				return false;
 			}
@@ -20,8 +19,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		AddCode = function()
-		{
+		AddCode = function () {
 		  ShowNotify($.t('Press button on Remote...'));
 		  
 		  setTimeout(function() {
@@ -35,8 +33,7 @@ define(['app'], function (app) {
 			   dataType: 'json',
 			   success: function(data) {
 				if (typeof data.status != 'undefined') {
-				  if (data.status == 'OK')
-				  {
+							if (data.status == 'OK') {
 					bHaveFoundDevice=true;
 					deviceidx=data.idx;
 					Cmd=data.Cmd;
@@ -47,8 +44,7 @@ define(['app'], function (app) {
 			HideNotify();
 			
 			setTimeout(function() {
-			  if (bHaveFoundDevice == true)
-			  {
+					if (bHaveFoundDevice == true) {
 						$.ajax({
 							 url: "json.htm?type=command&param=addscenecode&sceneidx="+$.SceneIdx+"&idx="+deviceidx+"&cmnd="+Cmd, 
 							 async: false, 
@@ -65,8 +61,7 @@ define(['app'], function (app) {
 			}, 600);
 		}
 		
-		ClearCodes = function()
-		{
+		ClearCodes = function () {
 			var bValid = false;
 			bootbox.confirm($.t("Are you sure to delete ALL Devices?\n\nThis action can not be undone!"), function(result) {
 				if (result==true) {
@@ -82,13 +77,11 @@ define(['app'], function (app) {
 			});
 		}
 
-		AddScene = function()
-		{
+		AddScene = function () {
 			$( "#dialog-addscene" ).dialog( "open" );
 		}
 
-		DeleteScene = function()
-		{
+		DeleteScene = function () {
 			bootbox.confirm($.t("Are you sure to remove this Scene?"), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -103,8 +96,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		SaveScene = function()
-		{
+		SaveScene = function () {
 				var bValid = true;
 				bValid = bValid && checkLength( $("#scenecontent #devicename"), 2, 100 );
 				
@@ -156,8 +148,7 @@ define(['app'], function (app) {
 				}
 		}
 
-		AddDevice = function()
-		{
+		AddDevice = function () {
 			var DeviceIdx=$("#scenecontent #combodevice option:selected").val();
 			if (typeof DeviceIdx == 'undefined') {
 				bootbox.alert($.t('No Device Selected!'));
@@ -208,8 +199,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		ClearDevices = function()
-		{
+		ClearDevices = function () {
 			var bValid = false;
 			bootbox.confirm($.t("Are you sure to delete ALL Devices?\n\nThis action can not be undone!"), function(result) {
 				if (result==true) {
@@ -225,8 +215,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		MakeFavorite = function(id,isfavorite)
-		{
+		MakeFavorite = function (id, isfavorite) {
 			if (!permissions.hasPermission("Admin")) {
 				HideNotify();
 				ShowNotify($.t('You do not have permission to do that!'), 2500, true);
@@ -247,8 +236,7 @@ define(['app'], function (app) {
 		  });
 		}
 
-		ChangeDeviceOrder = function(order, devid)
-		{
+		ChangeDeviceOrder = function (order, devid) {
 			if (!permissions.hasPermission("Admin")) {
 				HideNotify();
 				ShowNotify($.t('You do not have permission to do that!'), 2500, true);
@@ -264,8 +252,7 @@ define(['app'], function (app) {
 		  });
 		}
 
-		SetColValue = function (idx,hue,brightness)
-		{
+		SetColValue = function (idx, hue, brightness) {
 			clearInterval($.setColValue);
 			if (permissions.hasPermission("Viewer")) {
 				HideNotify();
@@ -280,13 +267,11 @@ define(['app'], function (app) {
 			});
 		}
 
-		RefreshDeviceTableEx = function()
-		{
+		RefreshDeviceTableEx = function () {
 			RefreshDeviceTable($.SceneIdx);
 		}
 
-		RefresActivators = function()
-		{
+		RefresActivators = function () {
 			$('#scenecontent #delclract #removecode').attr("class", "btnstyle3-dis");
 
 		  var oTable = $('#scenecontent #scenedactivationtable').dataTable();
@@ -337,8 +322,7 @@ define(['app'], function (app) {
 		  $('#modal').hide();
 		}
 
-		RefreshDeviceTable = function(idx)
-		{
+		RefreshDeviceTable = function (idx) {
 		  $('#modal').show();
 
 			$.SceneIdx=idx;
@@ -484,8 +468,7 @@ define(['app'], function (app) {
 		  $('#modal').hide();
 		}
 
-		UpdateDevice = function(idx, devidx)
-		{
+		UpdateDevice = function (idx, devidx) {
 			var DeviceIdx=$("#scenecontent #combodevice option:selected").val();
 			if (typeof DeviceIdx == 'undefined') {
 				bootbox.alert($.t('No Device Selected!'));
@@ -541,8 +524,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		DeleteDevice = function(idx)
-		{
+		DeleteDevice = function (idx) {
 			bootbox.confirm($.t("Are you sure to delete this Device?\n\nThis action can not be undone..."), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -557,8 +539,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		OnSelChangeDevice = function()
-		{
+		OnSelChangeDevice = function () {
 			var DeviceIdx=$("#scenecontent #combodevice option:selected").val();
 			if (typeof DeviceIdx == 'undefined') {
 				$("#scenecontent #LevelDiv").hide();
@@ -583,18 +564,24 @@ define(['app'], function (app) {
 				if (bShowLevel==true) {
 					var levelDiv$ = $("#scenecontent #LevelDiv");
 					levelDiv$.find("option").show().end().show();
-					if (dimmerLevels !== "all") {
-						levelDiv$.find("option").hide();
+
+					var dimmerValues = [];
+
 						$.each(dimmerLevels.split(','), function(i, level) {
-							levelDiv$.find("option[value=\"" + level + "\"]").show();
+						dimmerValues[i] = level;
 						});
+
+					levelDiv$.find("option").remove();
+					for (var levelCounter = 0; levelCounter < dimmerValues.length; levelCounter++) {
+						var option = $('<option />');
+						option.attr('value', dimmerValues[levelCounter]).text(dimmerValues[levelCounter] + "%");
+						$("#scenecontent #combolevel").append(option);
 					}
 				}
 			}
 		}
 
-		EditSceneDevice = function(idx,name,description,havecode,type,bIsProtected,onaction,offaction)
-		{
+		EditSceneDevice = function (idx, name, description, havecode, type, bIsProtected, onaction, offaction) {
 			if (typeof $scope.mytimer != 'undefined') {
 				$interval.cancel($scope.mytimer);
 				$scope.mytimer = undefined;
@@ -709,8 +696,7 @@ define(['app'], function (app) {
 			RefresActivators();
 		}
 
-		RefreshLightSwitchesComboArray = function()
-		{
+		RefreshLightSwitchesComboArray = function () {
 			$.LightsAndSwitches = [];
 		  $.ajax({
 			 url: "json.htm?type=command&param=getlightswitches", 
@@ -733,8 +719,7 @@ define(['app'], function (app) {
 		  });
 		}
 
-		EnableDisableDays = function(TypeStr, bDisabled)
-		{
+		EnableDisableDays = function (TypeStr, bDisabled) {
 				$('#scenecontent #timerparamstable #ChkMon').prop('checked', ((TypeStr.indexOf("Mon") >= 0)||(TypeStr=="Everyday")||(TypeStr=="Weekdays")) ? true : false);
 				$('#scenecontent #timerparamstable #ChkTue').prop('checked', ((TypeStr.indexOf("Tue") >= 0)||(TypeStr=="Everyday")||(TypeStr=="Weekdays")) ? true : false);
 				$('#scenecontent #timerparamstable #ChkWed').prop('checked', ((TypeStr.indexOf("Wed") >= 0)||(TypeStr=="Everyday")||(TypeStr=="Weekdays")) ? true : false);
@@ -752,8 +737,7 @@ define(['app'], function (app) {
 				$('#scenecontent #timerparamstable #ChkSun').attr('disabled', bDisabled);
 		}
 
-		ClearTimers = function()
-		{
+		ClearTimers = function () {
 			bootbox.confirm($.t("Are you sure to delete ALL timers?\n\nThis action can not be undone!"), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -772,8 +756,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		DeleteTimer = function(idx)
-		{
+		DeleteTimer = function (idx) {
 			bootbox.confirm($.t("Are you sure to delete this timers?\n\nThis action can not be undone..."), function(result) {
 				if (result==true) {
 					$.ajax({
@@ -792,8 +775,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		GetTimerSettings = function()
-		{
+		GetTimerSettings = function () {
 			var tsettings = {};
 			tsettings.level=100;
 			tsettings.Active=$('#scenecontent #timerparamstable #enabled').is(":checked");
@@ -833,8 +815,7 @@ define(['app'], function (app) {
 			tsettings.month=$("#scenecontent #timerparamstable #months").val();
 			tsettings.occurence=$("#scenecontent #timerparamstable #occurence").val();
 			tsettings.weekday=$("#scenecontent #timerparamstable #weekdays").val();
-			if (tsettings.cmd==0)
-			{
+			if (tsettings.cmd == 0) {
 				if ($.isDimmer) {
 					tsettings.level=$("#scenecontent #timerparamstable #combolevel").val();
 				}
@@ -842,8 +823,7 @@ define(['app'], function (app) {
 			return tsettings;
 		}
 
-		UpdateTimer = function(idx)
-		{
+		UpdateTimer = function (idx) {
 			var tsettings=GetTimerSettings();
 			if (tsettings.timertype==5) {
 				if (tsettings.date=="") {
@@ -887,8 +867,7 @@ define(['app'], function (app) {
 			else if ((tsettings.timertype==11) || (tsettings.timertype==13)) {
 				tsettings.days = Math.pow(2, tsettings.weekday);
 			}
-			else if (tsettings.days==0)
-			{
+			else if (tsettings.days == 0) {
 				ShowNotify($.t('Please select some days!'), 2500, true);
 				return;
 			}
@@ -918,8 +897,7 @@ define(['app'], function (app) {
 			});
 		}
 
-		AddTimer = function()
-		{
+		AddTimer = function () {
 			var tsettings=GetTimerSettings();
 			if (tsettings.timertype==5) {
 				if (tsettings.date=="") {
@@ -963,8 +941,7 @@ define(['app'], function (app) {
 			else if ((tsettings.timertype==11) || (tsettings.timertype==13)) {
 				tsettings.days = Math.pow(2, tsettings.weekday);
 			}
-			else if (tsettings.days==0)
-			{
+			else if (tsettings.days == 0) {
 				ShowNotify($.t('Please select some days!'), 2500, true);
 				return;
 			}
@@ -1004,8 +981,7 @@ define(['app'], function (app) {
 			return o;
 		};
 
-		RefreshTimerTable = function(idx)
-		{
+		RefreshTimerTable = function (idx) {
 		  $('#modal').show();
 
 			$.isDimmer=false;
@@ -1251,8 +1227,7 @@ define(['app'], function (app) {
 		  $('#modal').hide();
 		}
 
-		ShowTimers = function(id,name,itemtype)
-		{
+		ShowTimers = function (id, name, itemtype) {
 			if (typeof $scope.mytimer != 'undefined') {
 				$interval.cancel($scope.mytimer);
 				$scope.mytimer = undefined;
@@ -1280,8 +1255,7 @@ define(['app'], function (app) {
 			 }
 		  });
 		  
-		  if (sunRise!="")
-		  {
+			if (sunRise != "") {
 			htmlcontent+=$.t('SunRise') + ': ' + sunRise + ', ' + $.t('SunSet') + ': ' + sunSet + '<br><br>\n';
 		  }
 		  
@@ -1380,16 +1354,13 @@ define(['app'], function (app) {
 			}
 						
 		  //fill hour/minute/days comboboxes
-		  for (ii=0; ii<24; ii++)
-		  {
+			for (ii = 0; ii < 24; ii++) {
 				$('#timerparamstable #combotimehour').append($('<option></option>').val(ii).html($.strPad(ii,2)));  
 		  }
-		  for (ii=0; ii<60; ii++)
-		  {
+			for (ii = 0; ii < 60; ii++) {
 				$('#timerparamstable #combotimemin').append($('<option></option>').val(ii).html($.strPad(ii,2)));  
 		  }
-		  for (ii=1; ii<=31; ii++)
-		  {
+			for (ii = 1; ii <= 31; ii++) {
 				$('#timerparamstable #days').append($('<option></option>').val(ii).html(ii));  
 		  }
 		  $("#scenecontent #timerparamstable #when_1").click(function() {
@@ -1432,8 +1403,7 @@ define(['app'], function (app) {
 		  RefreshTimerTable(id);
 		 }
 
-		RefreshScenes = function()
-		{
+		RefreshScenes = function () {
 			if (typeof $scope.mytimer != 'undefined') {
 				$interval.cancel($scope.mytimer);
 				$scope.mytimer = undefined;
@@ -1456,8 +1426,8 @@ define(['app'], function (app) {
 						id="#scenecontent #" + item.idx;
 						var obj=$(id);
 						if (typeof obj != 'undefined') {
-							if ($(id + " #name").html()!=item.Name) {
-								$(id + " #name").html(item.Name);
+							if ($(id + " #name > span").html() != item.Name) {
+								$(id + " #name > span").html(item.Name);
 							}
 							var img1="";
 							var img2="";
@@ -1489,9 +1459,9 @@ define(['app'], function (app) {
 								if ($(id + " #img2").html()!=img2) {
 									$(id + " #img2").html(img2);
 								}
-								if ($(id + " #status").html()!=TranslateStatus(item.Status)) {
-									$(id + " #status").html(TranslateStatus(item.Status));
-									$(id + " #bigtext").html(bigtext);
+								if ($(id + " #status > span").html() != TranslateStatus(item.Status)) {
+									$(id + " #status > span").html(TranslateStatus(item.Status));
+									$(id + " #bigtext > span").html(bigtext);
 								}
 							}
 									
@@ -1499,8 +1469,8 @@ define(['app'], function (app) {
 								$(id + " #img1").html(img1);
 							}
 
-							if ($(id + " #lastupdate").html()!=item.LastUpdate) {
-								$(id + " #lastupdate").html(item.LastUpdate);
+							if ($(id + " #lastupdate > span").html() != item.LastUpdate) {
+								$(id + " #lastupdate > span").html(item.LastUpdate);
 							}
 							if ($scope.config.ShowUpdatedEffect==true) {
 								$(id + " #name").effect("highlight", { color: '#EEFFEE' }, 1000);
@@ -1518,14 +1488,28 @@ define(['app'], function (app) {
 			 });
 		}
 
-		ShowScenes = function()
-		{
+		ShowScenes = function () {
 			if (typeof $scope.mytimer != 'undefined') {
 				$interval.cancel($scope.mytimer);
 				$scope.mytimer = undefined;
 			}
 			
 		  RefreshLightSwitchesComboArray();
+
+			$("body").removeClass();
+			$("body").addClass("scenes");
+			if ($scope.config.DashboardType == 0) {
+				$("body").addClass("3column");
+			}
+			if ($scope.config.DashboardType == 1) {
+				$("body").addClass("4column");
+			}
+			if (($scope.config.DashboardType == 2) || (window.myglobals.ismobile == true)) {
+				$("body").addClass("dashMobile");
+			}
+			if ($scope.config.DashboardType == 3) {
+				$("body").addClass("dashFloorplan");
+			}
 
 		  var htmlcontent = '';
 		  var bHaveAddedDevider = false;
@@ -1534,14 +1518,20 @@ define(['app'], function (app) {
 		  var tophtm="";
 		  if (permissions.hasPermission("Admin")) {
 			tophtm+=
-				'\t<table border="0" cellpadding="0" cellspacing="0" width="100%">' +
+					'\t<div id="tophtm">' +
+					'\t<table id="prebannav" class="prebannav" border="0" cellpadding="0" cellspacing="0" width="100%">' +
 				'\t<tr>' +
 				'\t  <td align="left" valign="top" id="timesun"></td>\n' +
-				'\t  <td align="right">' +
-				'\t    <a class="btnstyle" onclick="AddScene();" data-i18n="Add Scene">Add Scene</a>' +
+					'\t</tr>' +
+					'\t</table>' +
+					'\t<table id="bannav" class="bannav" border="0" cellpadding="0" cellspacing="0" width="100%">' +
+					'\t<tr>' +
+					'\t  <td align="left">' +
+					'\t    <a class="btnstyle addscenebtn" onclick="AddScene();" data-i18n="Add Scene">Add Scene</a>' +
 				'\t  </td>' +
 				'\t</tr>' +
-				'\t</table>';
+					'\t</table>' +
+					'\t</div>';
 		  }
 
 		  var i=0;
@@ -1559,9 +1549,8 @@ define(['app'], function (app) {
 				}
 				
 				$.each(data.result, function(i,item){
-				  if (j % 3 == 0)
-				  {
-					//add devider
+							if (j % 3 == 0) {
+								//add divider
 					if (bHaveAddedDevider == true) {
 					  //close previous devider
 					  htmlcontent+='</div>\n';
@@ -1569,35 +1558,49 @@ define(['app'], function (app) {
 					htmlcontent+='<div class="row divider">\n';
 					bHaveAddedDevider=true;
 				  }
+
+
+							var backgroundClass = "statusNormal";
+							if (item.Protected == true) {
+								backgroundClass = "statusProtected";
+							}
+							else if (item.HaveTimeout == true) {
+								backgroundClass = "statusTimeout";
+							}
+							else {
+								var BatteryLevel = parseInt(item.BatteryLevel);
+								if (BatteryLevel != 255) {
+									if (BatteryLevel <= 10) {
+										backgroundClass = "statusLowBattery";
+									}
+								}
+							}
+
 				  var bAddTimer=true;
 				  var xhtm=
 						'\t<div class="span4" id="' + item.idx + '">\n' +
-						'\t  <section>\n';
+								'\t  <div class="item ' + backgroundClass + '">\n';
 					  if (item.Type=="Scene") {
 						xhtm+='\t    <table id="itemtablenostatus" border="0" cellpadding="0" cellspacing="0">\n';
 					  }
 					  else {
 						xhtm+='\t    <table id="itemtabledoubleicon" border="0" cellpadding="0" cellspacing="0">\n';
 					  }
-						var nbackcolor="#D4E1EE";
-						if (item.Protected==true) {
-							nbackcolor="#A4B1EE";
-						}
 					  xhtm+=
 						'\t    <tr>\n' +
-						'\t      <td id="name" style="background-color: ' + nbackcolor + ';">' + item.Name + '</td>\n' +
-						'\t      <td id="bigtext">';
+								'\t      <td id="name" class="name"><span>' + item.Name + '</span></td>\n' +
+								'\t      <td id="bigtext" class="bigtext"><span class="wrapper">';
 						var bigtext=TranslateStatusShort(item.Status);
 					  if (item.UsedByCamera==true) {
 						var streamimg='<img src="images/webcam.png" title="' + $.t('Stream Video') +'" height="16" width="16">';
 						streamurl="<a href=\"javascript:ShowCameraLiveStream('" + escape(item.Name) + "','" + item.CameraIdx + "')\">" + streamimg + "</a>";
 						bigtext+="&nbsp;"+streamurl;
 					  }
-					  xhtm+=bigtext+'</td>\n';
+							xhtm += bigtext + '</span></td>\n';
 
 					if (item.Type=="Scene") {
-						xhtm+='<td id="img1"><img src="images/push48.png" title="' + $.t('Activate scene') +'" onclick="SwitchScene(' + item.idx + ',\'On\',RefreshScenes, ' + item.Protected +');" class="lcursor" height="48" width="48"></td>\n';
-						xhtm+='\t      <td id="status">&nbsp;</td>\n';
+								xhtm += '<td id="img1" class="img img1"><img src="images/push48.png" title="' + $.t('Activate scene') + '" onclick="SwitchScene(' + item.idx + ',\'On\',RefreshScenes, ' + item.Protected + ');" class="lcursor" height="48" width="48"></td>\n';
+								xhtm += '\t      <td id="status" class="status"><span>&nbsp;</span></td>\n';
 					}
 					else {
 						var onclass="";
@@ -1611,21 +1614,21 @@ define(['app'], function (app) {
 							offclass="transimg";
 						}
 
-						xhtm+='<td id="img1"><img class="lcursor ' + onclass + '" src="images/push48.png" title="' + $.t('Turn On') +'" onclick="SwitchScene(' + item.idx + ',\'On\',RefreshScenes, ' + item.Protected +');" height="48" width="48"></td>\n';
-						xhtm+='<td id="img2"><img class="lcursor ' + offclass + '"src="images/pushoff48.png" title="' + $.t('Turn Off') +'" onclick="SwitchScene(' + item.idx + ',\'Off\',RefreshScenes, ' + item.Protected +');" height="48" width="48"></td>\n';
-						xhtm+='\t      <td id="status">&nbsp;</td>\n';
+								xhtm += '<td id="img1" class="img img1"><img class="lcursor ' + onclass + '" src="images/push48.png" title="' + $.t('Turn On') + '" onclick="SwitchScene(' + item.idx + ',\'On\',RefreshScenes, ' + item.Protected + ');" height="48" width="48"></td>\n';
+								xhtm += '<td id="img2" class="img img2"><img class="lcursor ' + offclass + '"src="images/pushoff48.png" title="' + $.t('Turn Off') + '" onclick="SwitchScene(' + item.idx + ',\'Off\',RefreshScenes, ' + item.Protected + ');" height="48" width="48"></td>\n';
+								xhtm += '\t      <td id="status" class="status"><span class="wrapper">&nbsp;</span></td>\n';
 					}
 					xhtm+=
-						'\t      <td id="lastupdate">' + item.LastUpdate + '</td>\n' +
+								'\t      <td id="lastupdate" class="lastupdate"><span>' + item.LastUpdate + '</span></td>\n' +
 						'\t      <td id="type">' + $.t(item.Type) +'</td>\n';
-					xhtm+='\t      <td>';
+							xhtm += '\t      <td class="options">';
 				  if (item.Favorite == 0) {
 					xhtm+=      
-						  '<img src="images/nofavorite.png" title="' + $.t('Add to Dashboard') +'" onclick="MakeFavorite(' + item.idx + ',1);" class="lcursor">&nbsp;&nbsp;&nbsp;&nbsp;';
+									'<img src="images/nofavorite.png" title="' + $.t('Add to Dashboard') + '" onclick="MakeFavorite(' + item.idx + ',1);" class="favorite favoriteOff lcursor">&nbsp;&nbsp;&nbsp;&nbsp;';
 				  }
 				  else {
 					xhtm+=      
-						  '<img src="images/favorite.png" title="' + $.t('Remove from Dashboard') +'" onclick="MakeFavorite(' + item.idx + ',0);" class="lcursor">&nbsp;&nbsp;&nbsp;&nbsp;';
+									'<img src="images/favorite.png" title="' + $.t('Remove from Dashboard') + '" onclick="MakeFavorite(' + item.idx + ',0);" class="favorite favoriteOn lcursor">&nbsp;&nbsp;&nbsp;&nbsp;';
 				  }
 				  xhtm+='<a class="btnsmall" onclick="ShowSceneLog(\'#scenecontent\',\'ShowScenes\',' + item.idx + ',\'' + escape(item.Name) + '\');" data-i18n="Log">Log</a> ';
 			  
@@ -1644,7 +1647,7 @@ define(['app'], function (app) {
 						'</td>\n' +
 						'\t    </tr>\n' +
 						'\t    </table>\n' +
-						'\t  </section>\n' +
+								'\t  </div>\n' +
 						'\t</div>\n';
 				  htmlcontent+=xhtm;
 				  j+=1;
@@ -1656,8 +1659,7 @@ define(['app'], function (app) {
 			//close previous devider
 			htmlcontent+='</div>\n';
 		  }
-		  if (htmlcontent == '')
-		  {
+			if (htmlcontent == '') {
 			htmlcontent='<h2>' + $.t('No Scenes defined yet...') + '</h2>';
 		  }
 		  $('#scenecontent').html(tophtm+htmlcontent); //tophtm+htmlcontent
@@ -1704,8 +1706,7 @@ define(['app'], function (app) {
 
 		init();
 
-		function init()
-		{
+		function init() {
 			$.devIdx=0;
 			$.myglobals = {
 				TimerTypesStr : [],
@@ -1756,8 +1757,7 @@ define(['app'], function (app) {
 														 dataType: 'json',
 														 success: function(data) {
 															if (typeof data.status != 'undefined') {
-																if (data.status == 'OK')
-																{
+										if (data.status == 'OK') {
 																	$.pDialog.dialog( "close" );
 																	ShowScenes();
 																}

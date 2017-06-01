@@ -7,25 +7,26 @@
 
 enum _eSwitchType
 {
-	STYPE_OnOff=0,			//0
-	STYPE_Doorbell,			//1
-	STYPE_Contact,			//2
-	STYPE_Blinds,			//3
-	STYPE_X10Siren,			//4
-	STYPE_SMOKEDETECTOR,	//5
-    STYPE_BlindsInverted,	//6
-	STYPE_Dimmer,			//7
-	STYPE_Motion,			//8
-	STYPE_PushOn,			//9
-	STYPE_PushOff,			//10
-	STYPE_DoorLock,			//11
-    STYPE_Dusk,             //12
-	STYPE_BlindsPercentage, //13
-	STYPE_VenetianBlindsUS,	//14
-	STYPE_VenetianBlindsEU,	//15
-	STYPE_BlindsPercentageInverted, //16
-	STYPE_Media,			//17
-	STYPE_Selector,			//18
+	STYPE_OnOff=0,					//0
+	STYPE_Doorbell,					//1
+	STYPE_Contact,					//2
+	STYPE_Blinds,					//3
+	STYPE_X10Siren,					//4
+	STYPE_SMOKEDETECTOR,			//5
+	STYPE_BlindsInverted,			//6
+	STYPE_Dimmer,					//7
+	STYPE_Motion,					//8
+	STYPE_PushOn,					//9
+	STYPE_PushOff,					//10
+	STYPE_DoorContact,				//11
+	STYPE_Dusk,						//12
+	STYPE_BlindsPercentage,			//13
+	STYPE_VenetianBlindsUS,			//14
+	STYPE_VenetianBlindsEU,			//15
+	STYPE_BlindsPercentageInverted,	//16
+	STYPE_Media,					//17
+	STYPE_Selector,					//18
+	STYPE_DoorLock,					//19
 	STYPE_END
 };
 
@@ -34,7 +35,7 @@ enum _eMeterType
 	MTYPE_ENERGY=0,			//0
 	MTYPE_GAS,				//1
 	MTYPE_WATER,			//2
-    MTYPE_COUNTER,			//3
+	MTYPE_COUNTER,			//3
 	MTYPE_ENERGY_GENERATED,	//4
 	MTYPE_TIME,				//5
 	MTYPE_END
@@ -150,12 +151,12 @@ enum _eHardwareTypes {
 	HTYPE_DomoticzInternal,		//67
 	HTYPE_NefitEastLAN,			//68
 	HTYPE_PanasonicTV,			//69
-	HTYPE_OpenWebNet,			//70
+	HTYPE_OpenWebNetTCP,		//70
 	HTYPE_RaspberryHTU21D,		//71
 	HTYPE_AtagOne,				//72
 	HTYPE_Sterbox,				//73
 	HTYPE_HTTPPOLLER,			//74
-	HTYPE_FITBIT,				//75
+	HTYPE_EVOHOME_WEB,	//75
 	HTYPE_RAVEn,	    		//76
 	HTYPE_S0SmartMeterTCP,		//77
 	HTYPE_DenkoviSmartdenLan,	//78
@@ -177,6 +178,13 @@ enum _eHardwareTypes {
 	HTYPE_PythonPlugin,			//94
 	HTYPE_XiaomiGateway,		//95
 	HTYPE_RaspberryBME280,		//96
+	HTYPE_Arilux,				//97
+	HTYPE_OpenWebNetUSB,		//98
+	HTYPE_IntergasInComfortLAN2RF,	//99
+	HTYPE_RelayNet,				//100
+	HTYPE_KMTronicUDP,			//101
+	HTYPE_SysfsGpio,			//102
+	HTYPE_Rtl433,                           //103
 	HTYPE_END
 };
 
@@ -208,12 +216,13 @@ enum _eNotificationTypes
 	NTYPE_PHOTO,
 	NTYPE_PAUSED,
 	NTYPE_STOPPED,
-	NTYPE_PLAYING
+	NTYPE_PLAYING,
+	NTYPE_VALUE,
+	NTYPE_LASTUPDATE
 };
 
 const char *RFX_Type_Desc(const unsigned char i, const unsigned char snum);
 const char *RFX_Type_SubType_Desc(const unsigned char dType, const unsigned char sType);
-const char *RFX_Type_SubType_Values(const unsigned char dType, const unsigned char sType);
 unsigned char Get_Humidity_Level(const unsigned char hlevel);
 const char *RFX_Humidity_Status_Desc(const unsigned char status);
 const char *Switch_Type_Desc(const _eSwitchType sType);
