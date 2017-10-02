@@ -251,6 +251,7 @@ const char *Hardware_Type_Desc(int hType)
 		{ HTYPE_KMTronicUDP, "KMTronic Gateway with LAN/UDP interface" },
 		{ HTYPE_SysfsGpio, "Generic sysfs GPIO" },
 		{ HTYPE_Rtl433, "Rtl433 RTL-SDR receiver" },
+		{ HTYPE_OnkyoAVTCP, "Onkyo AV Receiver (LAN)" },
 		{ 0, NULL, NULL }
 	};
 	return findTableIDSingle1 (Table, hType);
@@ -2279,6 +2280,31 @@ bool GetLightCommand(
 		{
 			cmd=light5_sOpen;
  			return true;
+		}
+		else if (switchcmd == "Group Mood 1")
+		{
+			cmd = light5_sMood1;
+			return true;
+		}
+		else if (switchcmd == "Group Mood 2")
+		{
+			cmd = light5_sMood2;
+			return true;
+		}
+		else if (switchcmd == "Group Mood 3")
+		{
+			cmd = light5_sMood3;
+			return true;
+		}
+		else if (switchcmd == "Group Mood 4")
+		{
+			cmd = light5_sMood4;
+			return true;
+		}
+		else if (switchcmd == "Group Mood 5")
+		{
+			cmd = light5_sMood5;
+			return true;
 		}
 		else
 			return false;

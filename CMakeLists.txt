@@ -105,7 +105,7 @@ IF(USE_PYTHON)
     INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
     add_definitions(-DENABLE_PYTHON)
   ELSE(PYTHONLIBS_FOUND)
-    MESSAGE(FATAL_ERROR "Python3 not found on your system, use ENABLE_PYTHON=NO or sudo apt-get install python3-dev)")
+    MESSAGE(FATAL_ERROR "Python3 not found on your system, use USE_PYTHON=NO or sudo apt-get install python3-dev)")
   ENDIF(PYTHONLIBS_FOUND)
 ENDIF(USE_PYTHON)
 
@@ -350,6 +350,7 @@ hardware/NefitEasy.cpp
 hardware/Nest.cpp
 hardware/Netatmo.cpp
 hardware/HttpPoller.cpp
+hardware/OnkyoAVTCP.cpp
 hardware/OpenWeatherMap.cpp
 hardware/OpenWebNetTCP.cpp
 hardware/OpenWebNetUSB.cpp
@@ -615,28 +616,12 @@ else()
   MESSAGE(STATUS "==== OpenZWave not found, support disabled!")
 ENDIF(OpenZWave)
 
-find_path(WiringPi wiringPi.h)
-IF(WiringPi)
-  message(STATUS "WiringPi include was found in ${WiringPi}...")
-  find_library(WIRINGPI_LIBRARY NAMES libwiringPi.a)
-  IF(WIRINGPI_LIBRARY)
-    message(STATUS "WiringPi library was found in ${WIRINGPI_LIBRARY}...")
-    add_definitions(-DWITH_GPIO)
-    target_link_libraries(domoticz ${WIRINGPI_LIBRARY})
-  else()
-    message(STATUS "==== WiringPi library not found. GPIO support disabled.")
-  message(STATUS "==== (Please follow http://wiringpi.com/download-and-install/ if you want to use GPIO.)")
-  ENDIF()
-else()
-  message(STATUS "==== WiringPi include file (wiringPi.h) not found. GPIO support disabled.")
-  message(STATUS "==== (Please follow http://wiringpi.com/download-and-install/ if you want to use GPIO.)")
-ENDIF(WiringPi)
 
 IF(EXISTS /sys/class/gpio)
-	message(STATUS "Sysfs gpio is available")
-	add_definitions(-DWITH_SYSFS_GPIO)
+  message(STATUS "GPIO is available")
+  add_definitions(-DWITH_GPIO)
 ELSE()
-	message(STATUS "Sysfs gpio is not available")
+  message(STATUS "GPIO is not available")
 ENDIF()
 
 

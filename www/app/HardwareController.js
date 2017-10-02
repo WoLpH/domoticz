@@ -154,6 +154,7 @@ define(['app'], function (app) {
 				}
 				if (text.indexOf("sysfs GPIO") >= 0) {
 					Mode1 = $('#hardwarecontent #hardwareparamssysfsgpio #sysfsautoconfigure').prop("checked") ? 1 : 0;
+					Mode2 = $('#hardwarecontent #hardwareparamssysfsgpio #sysfsdebounce').val();
 				}
             	$.ajax({
                      url: "json.htm?type=command&param=updatehardware&htype=" + hardwaretype +
@@ -247,31 +248,27 @@ define(['app'], function (app) {
 					extra = $.devExtra;
                 }
 
-				if (text.indexOf("P1 Smart Meter") >= 0 || text.indexOf("Teleinfo EDF") >= 0) {
-                    Mode2 = $("#hardwarecontent #divcrcp1 #disablecrcp1").prop("checked")?0:1;
-                }
-
-                $.ajax({
-                     url: "json.htm?type=command&param=updatehardware&htype=" + hardwaretype +
-                        "&port=" + encodeURIComponent(serialport) +
-                        "&extra=" + extra +
-                        "&name=" + encodeURIComponent(name) +
-                        "&enabled=" + bEnabled +
-                        "&idx=" + idx +
-                        "&datatimeout=" + datatimeout +
-                        "&Mode1=" + Mode1 + "&Mode2=" + Mode2 + "&Mode3=" + Mode3 + "&Mode4=" + Mode4 + "&Mode5=" + Mode5 + "&Mode6=" + Mode6,
-                     async: false,
-                     dataType: 'json',
-                     success: function(data) {
-                        RefreshHardwareTable();
-                     },
-                     error: function(){
-                            ShowNotify($.t('Problem updating hardware!'), 2500, true);
-                     }
-                });
-            }
-            else if (
-					(text.indexOf("LAN") >= 0 &&
+				$.ajax({
+					url: "json.htm?type=command&param=updatehardware&htype=" + hardwaretype +
+					"&port=" + encodeURIComponent(serialport) +
+					"&extra=" + extra +
+					"&name=" + encodeURIComponent(name) +
+					"&enabled=" + bEnabled +
+					"&idx=" + idx +
+					"&datatimeout=" + datatimeout +
+					"&Mode1=" + Mode1 + "&Mode2=" + Mode2 + "&Mode3=" + Mode3 + "&Mode4=" + Mode4 + "&Mode5=" + Mode5 + "&Mode6=" + Mode6,
+					async: false,
+					dataType: 'json',
+					success: function (data) {
+						RefreshHardwareTable();
+					},
+					error: function () {
+						ShowNotify($.t('Problem updating hardware!'), 2500, true);
+					}
+				});
+			}
+			else if (
+				(text.indexOf("LAN") >= 0 &&
 					text.indexOf("YouLess") == -1 &&
 					text.indexOf("Denkovi") == -1 &&
 					text.indexOf("Relay-Net") == -1 &&
@@ -862,35 +859,57 @@ define(['app'], function (app) {
 				var username = $("#hardwarecontent #divlogin #username").val();
 				var password = encodeURIComponent($("#hardwarecontent #divlogin #password").val());
 
-				var mode1 = $("#hardwarecontent #divevohomeweb #updatefrequencyevohomeweb").val();
-				if ( (mode1 == "") || (mode1 == "0") ) {
-					mode1 = "60";
+				var Pollseconds = parseInt($("#hardwarecontent #divevohomeweb #updatefrequencyevohomeweb").val());
+				if ( Pollseconds < 10 ) {
+					Pollseconds = 60;
 				}
-				var mode4 = $("#hardwarecontent #divevohomeweb #showlocationevohomeweb").prop("checked") ? 1 : 0;
-				if (mode4 == "1") {
+
+				var UseFlags = 0;
+				if ($("#hardwarecontent #divevohomeweb #showlocationevohomeweb").prop("checked"))
+				{
 					$("#hardwarecontent #divevohomeweb #disableautoevohomeweb").prop("checked", 1);
-                }
+					UseFlags = UseFlags | 4;
+				}
 
-				var mode2 = $("#hardwarecontent #divevohomeweb #disableautoevohomeweb").prop("checked") ? 0 : 1;
-				var mode3 = $("#hardwarecontent #divevohomeweb #showscheduleevohomeweb").prop("checked") ? 1 : 0;
+				if (!$("#hardwarecontent #divevohomeweb #disableautoevohomeweb").prop("checked")) // reverted value - default 0 is true
+				{
+					UseFlags = UseFlags | 1;
+				}
 
-				var mode5 = $("#hardwarecontent #divevohomeweb #comboevolocation").val()*4096;
-				mode5 = mode5 + $("#hardwarecontent #divevohomeweb #comboevogateway").val()*256;
-				mode5 = mode5 + $("#hardwarecontent #divevohomeweb #comboevotcs").val()*16;
+				if ($("#hardwarecontent #divevohomeweb #showscheduleevohomeweb").prop("checked"))
+				{
+					UseFlags = UseFlags | 2;
+				}
 
-                $.ajax({
-					url: "json.htm?type=command&param=updatehardware&htype=" + hardwaretype + "&username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password) + "&name=" + encodeURIComponent(name) + "&enabled=" + bEnabled + "&idx=" + idx +	"&datatimeout=" + datatimeout + "&Mode1=" + mode1 + "&Mode2=" + mode2 + "&Mode3=" + mode3 + "&Mode4=" + mode4 + "&Mode5=" + mode5,
-                     async: false,
-                     dataType: 'json',
-                     success: function(data) {
-                        RefreshHardwareTable();
-                     },
-                     error: function(){
-                            ShowNotify($.t('Problem updating hardware!'), 2500, true);
-                     }
-                });
-            }
-        }
+				var Precision = parseInt($("#hardwarecontent #divevohomeweb #comboevoprecision").val());
+				UseFlags += Precision;
+
+				var evo_installation = $("#hardwarecontent #divevohomeweb #comboevolocation").val()*4096;
+				evo_installation = evo_installation + $("#hardwarecontent #divevohomeweb #comboevogateway").val()*256;
+				evo_installation = evo_installation + $("#hardwarecontent #divevohomeweb #comboevotcs").val()*16;
+
+				$.ajax({
+					url: "json.htm?type=command&param=updatehardware&htype=" + hardwaretype + 
+					"&username=" + encodeURIComponent(username) + 
+					"&password=" + encodeURIComponent(password) + 
+					"&name=" + encodeURIComponent(name) +
+					"&enabled=" + bEnabled + 
+					"&idx=" + idx +	
+					"&datatimeout=" + datatimeout + 
+					"&Mode1=" + Pollseconds + 
+					"&Mode2=" + UseFlags +
+					"&Mode5=" + evo_installation,
+					async: false,
+					dataType: 'json',
+					success: function (data) {
+						RefreshHardwareTable();
+					},
+					error: function () {
+						ShowNotify($.t('Problem updating hardware!'), 2500, true);
+					}
+				});
+			}
+		}
 
 		AddHardware = function () {
             var name=$("#hardwarecontent #hardwareparamstable #hardwarename").val();
@@ -1109,13 +1128,15 @@ define(['app'], function (app) {
 			}
 			else if (text.indexOf("sysfs GPIO") >= 0) {
 				Mode1 = $('#hardwarecontent #hardwareparamssysfsgpio #sysfsautoconfigure').prop("checked") ? 1 : 0;
+				Mode2 = $('#hardwarecontent #hardwareparamssysfsgpio #sysfsdebounce').val();
 				$.ajax({
 					url: "json.htm?type=command&param=addhardware&htype="
 					+ hardwaretype
 					+ "&name=" + encodeURIComponent(name)
 					+ "&enabled=" + bEnabled
 					+ "&datatimeout=" + datatimeout
-					+ "&Mode1=" + Mode1,
+					+ "&Mode1=" + Mode1
+					+ "&Mode2=" + Mode2,
 					async: false,
 					dataType: 'json',
 					success: function (data) {
@@ -1194,7 +1215,6 @@ define(['app'], function (app) {
 						ratelimitp1 = "0";
 					}
 					Mode3 = ratelimitp1;
-
 				}
 				if (text.indexOf("Teleinfo EDF") >= 0) {
 					var baudrate = $("#hardwarecontent #divbaudrateteleinfo #combobaudrateteleinfo option:selected").val();
@@ -1211,8 +1231,7 @@ define(['app'], function (app) {
 						ratelimitp1 = "60";
 					}
 					Mode3 = ratelimitp1;
-
-                }
+				}
 
                 $.ajax({
 					url: "json.htm?type=command&param=addhardware&htype=" + hardwaretype + "&port=" + encodeURIComponent(serialport) + "&extra=" + extra + "&name=" + encodeURIComponent(name) + "&enabled=" + bEnabled + "&datatimeout=" + datatimeout +
@@ -1665,34 +1684,57 @@ define(['app'], function (app) {
 			else if (text.indexOf("Evohome via Web") >= 0) {
 				var username = $("#hardwarecontent #divlogin #username").val();
 				var password = encodeURIComponent($("#hardwarecontent #divlogin #password").val());
-				var mode1 = $("#hardwarecontent #divevohomeweb #updatefrequencyevohomeweb").val();
-				if ( (mode1 == "") || (mode1 == "0") ) {
-					mode1 = "60";
+				var Pollseconds = parseInt($("#hardwarecontent #divevohomeweb #updatefrequencyevohomeweb").val());
+				if ( Pollseconds < 10 ) {
+					Pollseconds = 60;
 				}
-				var mode4 = $("#hardwarecontent #divevohomeweb #showlocationevohomeweb").prop("checked") ? 1 : 0;
-				if (mode4 == "1") {
+
+				var UseFlags = 0;
+				if ($("#hardwarecontent #divevohomeweb #showlocationevohomeweb").prop("checked"))
+				{
 					$("#hardwarecontent #divevohomeweb #disableautoevohomeweb").prop("checked", 1);
-                }
-				var mode2 = $("#hardwarecontent #divevohomeweb #disableautoevohomeweb").prop("checked") ? 0 : 1;
-				var mode3 = $("#hardwarecontent #divevohomeweb #showscheduleevohomeweb").prop("checked");
+					UseFlags = UseFlags | 4;
+				}
 
-				var mode5 = $("#hardwarecontent #divevohomeweb #comboevolocation").val()*4096;
-				mode5 = mode5 + $("#hardwarecontent #divevohomeweb #comboevogateway").val()*256;
-				mode5 = mode5 + $("#hardwarecontent #divevohomeweb #comboevotcs").val()*16;
+				if (!$("#hardwarecontent #divevohomeweb #disableautoevohomeweb").prop("checked")) // reverted value - default 0 is true
+				{
+					UseFlags = UseFlags | 1;
+				}
 
-                $.ajax({
-					url: "json.htm?type=command&param=addhardware&htype=" + hardwaretype + "&username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password) + "&name=" + encodeURIComponent(name) + "&enabled=" + bEnabled + "&datatimeout=" + datatimeout + "&Mode1=" + mode1 + "&Mode2=" + mode2 + "&Mode3=" + mode3 + "&Mode4=" + mode4 + "&Mode5=" + mode5,
-                     async: false,
-                     dataType: 'json',
-                     success: function(data) {
-                        RefreshHardwareTable();
-                     },
-                     error: function(){
-                            ShowNotify($.t('Problem adding hardware!'), 2500, true);
-                     }
-                });
-            }
-        }
+				if ($("#hardwarecontent #divevohomeweb #showscheduleevohomeweb").prop("checked"))
+				{
+					UseFlags = UseFlags | 2;
+				}
+
+				var Precision = parseInt($("#hardwarecontent #divevohomeweb #comboevoprecision").val());
+				UseFlags += Precision;
+
+				var evo_installation = $("#hardwarecontent #divevohomeweb #comboevolocation").val()*4096;
+				evo_installation = evo_installation + $("#hardwarecontent #divevohomeweb #comboevogateway").val()*256;
+				evo_installation = evo_installation + $("#hardwarecontent #divevohomeweb #comboevotcs").val()*16;
+
+				$.ajax({
+					url: "json.htm?type=command&param=addhardware&htype=" + hardwaretype + 
+					"&username=" + encodeURIComponent(username) + 
+					"&password=" + encodeURIComponent(password) + 
+					"&name=" + encodeURIComponent(name) +
+					"&enabled=" + bEnabled + 
+					"&idx=" + idx +	
+					"&datatimeout=" + datatimeout + 
+					"&Mode1=" + Pollseconds + 
+					"&Mode2=" + UseFlags +
+					"&Mode5=" + evo_installation,
+					async: false,
+					dataType: 'json',
+					success: function (data) {
+						RefreshHardwareTable();
+					},
+					error: function () {
+						ShowNotify($.t('Problem adding hardware!'), 2500, true);
+					}
+				});
+			}
+		}
 
 		EditRFXCOMMode = function (idx, name, Mode1, Mode2, Mode3, Mode4, Mode5, Mode6) {
             cursordefault();
@@ -4969,6 +5011,7 @@ define(['app'], function (app) {
 						}
 						else if (data["Type"].indexOf("sysfs GPIO") >= 0) {
 							$("#hardwarecontent #hardwareparamssysfsgpio #sysfsautoconfigure").prop("checked", data["Mode1"] == 1);
+							$("#hardwarecontent #hardwareparamssysfsgpio #sysfsdebounce").val(data["Mode2"]);
 						}
 						else if (data["Type"].indexOf("USB") >= 0 || data["Type"].indexOf("Teleinfo EDF") >= 0) {
                             $("#hardwarecontent #hardwareparamsserial #comboserialport").val(data["IntPort"]);
@@ -5124,25 +5167,31 @@ define(['app'], function (app) {
 							$("#hardwarecontent #hardwareparamslogin #password").val(data["Password"]);
 						}
 						if (data["Type"].indexOf("Evohome via Web") >= 0) {
-                            $("#hardwarecontent #hardwareparamslogin #username").val(data["Username"]);
-                            $("#hardwarecontent #hardwareparamslogin #password").val(data["Password"]);
-							if ( (data["Mode1"] == "") || (data["Mode1"] == "0") ) {
-								data["Mode1"] = "60";
-							}
+							$("#hardwarecontent #hardwareparamslogin #username").val(data["Username"]);
+							$("#hardwarecontent #hardwareparamslogin #password").val(data["Password"]);
 
-							$("#hardwarecontent #divevohomeweb #updatefrequencyevohomeweb").val(data["Mode1"]);
-							$("#hardwarecontent #divevohomeweb #disableautoevohomeweb").prop("checked", data["Mode2"] == 0);
-							$("#hardwarecontent #divevohomeweb #showscheduleevohomeweb").prop("checked", data["Mode3"]);
-							$("#hardwarecontent #divevohomeweb #showlocationevohomeweb").prop("checked", data["Mode4"]);
-							for (var i=0;i<10;i++){
+							var Pollseconds = parseInt(data["Mode1"]);
+							if ( Pollseconds < 10 ) {
+								Pollseconds = 60;
+							}
+							$("#hardwarecontent #divevohomeweb #updatefrequencyevohomeweb").val(Pollseconds);
+
+							var UseFlags = parseInt(data["Mode2"]);
+							$("#hardwarecontent #divevohomeweb #disableautoevohomeweb").prop("checked",((UseFlags & 1) ^ 1));
+							$("#hardwarecontent #divevohomeweb #showscheduleevohomeweb").prop("checked",((UseFlags & 2) >>> 1));
+							$("#hardwarecontent #divevohomeweb #showlocationevohomeweb").prop("checked",((UseFlags & 4) >>> 2));
+							$("#hardwarecontent #divevohomeweb #comboevoprecision").val((UseFlags & 24));
+
+							var Location = parseInt(data["Mode5"]);
+							for (var i=1;i<10;i++){
 								$("#hardwarecontent #divevohomeweb #comboevolocation")[0].options[i]=new Option(i,i);
 								$("#hardwarecontent #divevohomeweb #comboevogateway")[0].options[i]=new Option(i,i);
 								$("#hardwarecontent #divevohomeweb #comboevotcs")[0].options[i]=new Option(i,i);
 							}
-							$("#hardwarecontent #divevohomeweb #comboevolocation").val(Math.floor(data["Mode5"]/4096));
-							$("#hardwarecontent #divevohomeweb #comboevogateway").val(Math.floor(data["Mode5"]/512)%16);
-							$("#hardwarecontent #divevohomeweb #comboevotcs").val((data["Mode5"]/16)%16);
-                        }
+							$("#hardwarecontent #divevohomeweb #comboevolocation").val(Location >>> 12);
+							$("#hardwarecontent #divevohomeweb #comboevogateway").val((Location >>> 8) & 15);
+							$("#hardwarecontent #divevohomeweb #comboevotcs").val((Location >>> 4) & 15);
+						}
 
 						// Handle plugins generically.  If the plugin requires a data field it will have been created on page load.
                         if (data["Type"] == "PLUGIN") {
@@ -5200,6 +5249,58 @@ define(['app'], function (app) {
                  }
             });
         }
+
+		//credits: http://www.netlobo.com/url_query_string_javascript.html
+		function gup(url, name) {
+			name = name.replace(/[[]/, "\[").replace(/[]]/, "\]");
+			var regexS = "[\?&]" + name + "=([^&#]*)";
+			var regex = new RegExp(regexS);
+			var results = regex.exec(url);
+			if (results == null)
+				return "";
+			else
+				return results[1];
+		}
+
+		function validateToonToken(token) {
+			alert(code);
+		}
+
+		OnAuthenticateToon = function () {
+			var pwidth = 800;
+			var pheight = 600;
+
+			var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
+			var dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+
+			var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+			var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+			var left = ((width / 2) - (pwidth / 2)) + dualScreenLeft;
+			var top = ((height / 2) - (pheight / 2)) + dualScreenTop;
+
+			var REDIRECT = 'http://127.0.0.1/domoticiz_toon';
+			var CLIENT_ID = '7gQMPclYzm8haCHAgdvjq1yILLwa';
+			var _url = 'https://api.toonapi.com/authorize?response_type=code&redirect_uri=' + REDIRECT + '&client_id=' + CLIENT_ID;
+			//_url = "http://127.0.0.1:8081/11";
+			var win = window.open(_url, "windowtoonaith", 'scrollbars=yes, width=' + pwidth + ', height=' + pheight + ', left=' + left + ', top=' + top);
+			if (window.focus) {
+				win.focus();
+			}
+			var pollTimer = window.setInterval(function () {
+				if (win.closed !== false) { // !== is required for compatibility with Opera
+					window.clearInterval(pollTimer);
+				}
+				else if (win.document.URL.indexOf(REDIRECT) != -1) {
+					window.clearInterval(pollTimer);
+					console.log(win.document.URL);
+					var url = win.document.URL;
+					var code = gup(url, 'code');
+					win.close();
+					validateToonToken(code);
+				}
+			}, 200);
+		}
 
 		UpdateHardwareParamControls = function () {
             $("#hardwarecontent #hardwareparamstable #enabled").prop('disabled', false);
