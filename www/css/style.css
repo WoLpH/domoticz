@@ -2782,3 +2782,6 @@ tspan{
 	font-size: 0.9em;
 }
 
+tfoot.filters{
+    display: table-header-group;
+}
